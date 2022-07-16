@@ -4,7 +4,7 @@
     <div id="header" style="margin-top: 5px;">
       <nav id="headerNav">
         <!--LOGO-->
-        <a :href="siteUrl"><img src="@/assets/photo.png" width="50px" id="logo"></a>
+        <a :href="siteUrl" ><img src="@/assets/img/photo.png" width="50px" id="logo"></a>
         <h1 id="top_tit" onclick="exTheme();">NIGHT<span style="color: #52a2e1;border-radius: 5px;">DARK</span></h1>
 
       </nav>
