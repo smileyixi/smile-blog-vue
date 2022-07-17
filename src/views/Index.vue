@@ -1,83 +1,84 @@
 <template>
-  <el-container style="margin: 0; padding: 0">
-    <Header></Header>
-    <el-main>
-      <div class="wrapper">
-        <!-- headerBar -->
-        <header :style="`background-image: url(${tit_bg})`">
-          <div class="description" style="float: right">
-            <a :href="siteUrl" style="cursor: pointer;">
-              <!-- 博客标题 -->
-              <h1 class="effect_1" :style="`background-image: url(${tit_font_bg})`" >
-                {{siteTitle}}
-              </h1>
-            </a>
+  <div id="app">
+      <el-container style="margin: 0; padding: 0">
+      <Header></Header>
+      <el-main>
+        <div class="wrapper">
+          <!-- headerBar -->
+          <header :style="`background-image: url(${tit_bg})`">
+            <div class="description" style="float: right">
+              <a :href="siteUrl" style="cursor: pointer;">
+                <!-- 博客标题 -->
+                <h1 class="effect_1" :style="`background-image: url(${tit_font_bg})`" >
+                  {{siteTitle}}
+                </h1>
+              </a>
+              
+              <!-- 个性标签 -->
+              <h2>{{siteDescription}}</h2>
+
+              <!-- 导航栏 -->
+              <nav>
+                <div class="bitcron_nav_container">
+                  <ul class="site_nav" >
+                    <li v-for="(item, index) in siteNavBar" :key="index">
+                      <a :href="item.path" style="cursor: pointer;user-select: none;">{{item.name}}</a>
+                    </li>
+                  </ul>
+                </div>
+              </nav>
+
+            </div>
+          </header>
+
+          <!-- content -->
+          <main class="contents">
+            <!-- 文章列表 -->
+            <router-view></router-view>
             
-            <!-- 个性标签 -->
-            <h2>{{siteDescription}}</h2>
-
-            <!-- 导航栏 -->
-            <nav>
-              <div class="bitcron_nav_container">
-                <ul class="site_nav" >
-                  <li v-for="(item, index) in siteNavBar" :key="index">
-                    <a :href="item.href" class="selected active nav__item" style="cursor: pointer;user-select: none;">{{item.name}}</a>
-                  </li>
-                </ul>
-              </div>
-            </nav>
-
-          </div>
-        </header>
-
-        <!-- content -->
-        <main class="content">
-          <!-- 文章列表 -->
-          <ArticleList></ArticleList>
-          
-          <!-- 底部列表 -->
-          <section class="list-page">
+            <!-- 底部 -->
+            <!-- <section class="list-page" v-if="this.$router.path == '/'">
+              <div class="clear"></div>
+            </section> -->
+          </main>
+        </div>
+        <!-- 聚合列表 -->
+        <aside class="aside ">
+          <!-- 文章 -->
+          <div class="aside-left sidebar">
+            <h3>随机文章</h3>
+            <ul>
+              <li style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
+                  :title="asideArt.title"
+                  v-for="(asideArt, index) in asideArticleList" :key="index"
+                ><a @click.stop="toRouter(asideArt.url)" style="cursor: pointer;">{{asideArt.title}}</a>
+              </li>
+            </ul>	
             <div class="clear"></div>
-          </section>
-        </main>
-      </div>
-      <!-- 聚合列表 -->
-      <aside class="aside ">
-        <!-- 文章 -->
-        <div class="aside-left sidebar">
-          <h3>随机文章</h3>
-          <ul>
-            <li style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
-                :title="asideArt.title"
-                v-for="(asideArt, index) in asideArticleList" :key="index"
-              ><a :href="asideArt.url" style="cursor: pointer;">{{asideArt.title}}</a>
-            </li>
-          </ul>	
-          <div class="clear"></div>
-        </div>
+          </div>
 
-        <!-- 标签 -->
-        <div class="aside-right sidebar">
-          <h3>分门别类</h3>
-          <ul>
-            <li v-for="(asideCate, index) in asideCategoryList" :key="index">
-              <a :href="asideCate.url" style="cursor: pointer;">{{asideCate.title}}<span> {{asideCate.count}}篇</span></a></li>
-            </ul>
-        </div>
-      </aside>
-    </el-main>
-    <Footer></Footer>
-  </el-container>
+          <!-- 标签 -->
+          <div class="aside-right sidebar">
+            <h3>分门别类</h3>
+            <ul>
+              <li v-for="(asideCate, index) in asideCategoryList" :key="index">
+                <a :href="asideCate.url" style="cursor: pointer;">{{asideCate.title}}<span> {{asideCate.count}}篇</span></a></li>
+              </ul>
+          </div>
+        </aside>
+      </el-main>
+      <Footer></Footer>
+    </el-container>
+  </div>
 </template>
 
 <script>
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
-import ArticleList from "../components/ArticleList.vue";
 
 export default {
   name: "MainIndex",
-  components: { Header, Footer, ArticleList },
+  components: { Header, Footer },
   data() {
     return {
       // source
@@ -91,24 +92,23 @@ export default {
       siteNavBar: [   // 导航栏
         {
           name: '首页',
-          href: this.siteUrl,
+          path: '/',
         },
         {
           name: '关于',
-          href: "http://localhost:8080/about",
+          path: "/about",
         },
         {
           name: '归档',
-          href: "http://localhost:8080/archive",
+          path: "/archives",
         },
         {
           name: '订阅',
-          href: this.siteUrl,
+          path: '/',
         }
         
       ],
       // 博客数据
-      
       asideArticleList: [ // 聚合文章列表
         {
           title: '欢迎使用 Smile-Blog',
@@ -139,10 +139,40 @@ export default {
 
     };
   },
+    methods: {
+      toRouter(path){
+        this.$router.push({
+          path: path})
+      }
+    }
 };
 </script>
 
 <style lang="less" scoped>
+* {
+  margin: 0;
+  padding: 0;
+}
+#app {
+  width: 100vw;
+  height: 100vh;
+}
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0 auto;
+    color: #333;
+    background: #f7f7f7;
+    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    line-height: 2em;
+    text-align: justify;
+    word-wrap: break-word;
+    background-attachment: fixed;
+}
 a {
   text-decoration: none;
 }
@@ -239,6 +269,7 @@ a {
           color: rgb(201, 201, 201);
           line-height: 2em;
           border-top: 2px solid #555;
+          transition: .5s;
         }
 
         a:hover {
@@ -250,9 +281,7 @@ a {
   }
 
   // 文章内容
-  .content {
-    
-
+  .contents {
     // 底部列表块
     .list-page {
       padding: 30px 20px;
@@ -262,10 +291,8 @@ a {
         clear: both;
       }
     }
-    
   }
 
-  
 }
 
 .aside {

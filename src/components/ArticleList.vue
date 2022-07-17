@@ -4,13 +4,13 @@
     v-for="(art, index) in articleList" :key="index">
       <!-- 标题 -->
       <h2 style="margin: 1em 0">
-        <a :href="art.url" class="article_title">{{art.title}}</a>
+        <a @click.stop="toRouter(art.id)" class="article_title">{{art.title}}</a>
         <span class="hot">{{art.hot}}度</span>
       </h2>
 
       <!-- 文章节选 -->
       <div class="excerpt">
-        <p>{{art.excerpt}}</p>
+        <p >{{art.excerpt}}</p>
       </div>
 
       <!-- 文章信息 -->
@@ -41,8 +41,8 @@ export default {
       return {
         articleList: [  // 文章列表
           {
+            id: 1,
             title: '欢迎使用 Smile-Blog',
-            url: '#',
             excerpt: '东风夜放花千树。更吹落、星如雨。宝马雕车香满路。凤箫声动，玉壶光转，一夜鱼龙舞...',
             hot: 2,
             meta: {
@@ -52,8 +52,8 @@ export default {
             }
           },
           {
+            id: 2,
             title: '簌簌冰上花，耀耀灿金华',
-            url: '#',
             excerpt: '落霞与孤鹜齐飞，秋水共长天一色',
             hot: 2,
             meta: {
@@ -63,16 +63,23 @@ export default {
             }
           }
         ],
-
-
       }
     },
+    methods: {
+      toRouter(id){
+        this.$router.push({
+          path: "/archive",
+          query: {
+            id: id
+          }
+        })
+      }
+    }
 }
 </script>
 
 <style lang="less" scoped>
-.content {
-  // 文章列表块
+// 文章列表块
   .article-list {
     padding: 0 20px;
     margin: 0 30px;
@@ -82,6 +89,7 @@ export default {
       text-decoration: none;
       color: #1f1f1f;
       font-size: .8em;
+      cursor: pointer;
 
       &::before {
         content: "# ";
@@ -125,5 +133,4 @@ export default {
       }
     }
   }
-}
 </style>

@@ -6,16 +6,20 @@ const router = new VueRouter({
         {
             path: '/',
             name: 'index',
-            component: ()=>import('@/views/Index.vue'),
+            component: ()=>import('@/components/ArticleList.vue'),
             meta: {
                 keepalive: true
             }
         },
         {
             path: '/about',
-            name: 'about',
             component: ()=>import('@/views/About.vue')
         },
+        {
+            path: '/archive',
+            name: 'archive',
+            component: ()=>import('@/components/Archive.vue')
+        }
     ]
 })
 
