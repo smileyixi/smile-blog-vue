@@ -1,23 +1,27 @@
 <template>
   <section class="article-list">
+    <!-- 错误信息 -->
+      <p>
+        {{errMsg}}
+      </p>
     <article style="margin-top: 50px;" class="article" 
-    v-for="(art, index) in articleList" :key="index">
+    v-for="art in articleList" :key="art._id">
       <!-- 标题 -->
       <h2 style="margin: 1em 0">
-        <a @click.stop="toRouter(art.id)" class="article_title">{{art.title}}</a>
+        <a @click="toRouter(art._id)" class="article_title">{{art.title}}</a>
         <span class="hot">{{art.hot}}度</span>
       </h2>
 
       <!-- 文章节选 -->
       <div class="excerpt">
-        <p >{{art.excerpt}}</p>
+        <p >{{(art.content).slice(0, 48)}}<span>{{art.content.length>48?'...':''}}</span></p>
       </div>
 
       <!-- 文章信息 -->
       <div class="meta">
         <span class="item">
           <i class="iconfont icon-calendar"></i>
-          <time :datetime="art.meta.time"> {{art.meta.time}}</time>
+          <time :datetime="art.meta.createAt"> {{art.meta.createAt}}</time>
         </span>
         <span class="item">
           <i class="iconfont icon-tag"></i>
@@ -35,45 +39,42 @@
 </template>
 
 <script>
+import { getBlogList } from '@/request/api'
+
 export default {
     name: 'ArticleList',
     data() {
       return {
-        articleList: [  // 文章列表
-          {
-            id: 1,
-            title: '欢迎使用 Smile-Blog',
-            excerpt: '东风夜放花千树。更吹落、星如雨。宝马雕车香满路。凤箫声动，玉壶光转，一夜鱼龙舞...',
-            hot: 2,
-            meta: {
-              time: '2022.07.16',
-              tags: ['默认分类', '日常', '测试'],
-              comments: 1
-            }
-          },
-          {
-            id: 2,
-            title: '簌簌冰上花，耀耀灿金华',
-            excerpt: '落霞与孤鹜齐飞，秋水共长天一色',
-            hot: 2,
-            meta: {
-              time: '2022.07.16',
-              tags: ['默认分类', '日常'],
-              comments: 1
-            }
-          }
-        ],
+        articleList: [],
+        timer: '',
+        errMsg: ''
       }
     },
     methods: {
       toRouter(id){
         this.$router.push({
-          path: "/archive",
+          name: "archive",
           query: {
             id: id
           }
         })
+      },
+
+      // 加载数据
+      onLoad() {
+        getBlogList({}).then(result=>{
+          this.articleList = result
+        }).catch(err=>{
+          // 请求错误
+          this.errMsg = err
+        })
       }
+    },
+    mounted() {
+      this.onLoad()
+    },
+    beforeDestroy() {
+      clearInterval(this.timer)
     }
 }
 </script>

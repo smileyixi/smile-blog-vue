@@ -1,5 +1,9 @@
 <template>
   <section class="article-detail">
+    <!-- 错误信息 -->
+    <p>
+    {{errMsg}}
+    </p>
     <!-- 文章内容 -->
     <article class="content">
         <h1 style="margin: 1em 0">{{article.title}}</h1>
@@ -7,7 +11,7 @@
         <div class="meta">
             <span class="item">
                 <i class="iconfont icon-calendar"></i>
-                <time :datetime="article.meta.time"> {{article.meta.time}}</time>
+                <time > {{article.meta.createAt}}</time>
             </span>
             <span class="item">
                 <i class="iconfont icon-tag"></i>
@@ -22,7 +26,7 @@
         </div>
         <!-- post data -->
         <div class="post">
-            <p>{{article.excerpt}}</p>
+            <p>{{article.content}}</p>
         </div>
     </article>
     <!-- 换页 -->
@@ -34,25 +38,30 @@
 </template>
 
 <script>
+import { getArticleById } from '@/request/api'
 export default {
     name: 'Archive',
     data() {
         return {
-            article: {
-                title: '欢迎使用 Smile-Blog',
-                url: '#',
-                excerpt: '东风夜放花千树。更吹落、星如雨。宝马雕车香满路。凤箫声动，玉壶光转，一夜鱼龙舞...',
-                hot: 2,
-                meta: {
-                    time: '2022.07.16',
-                    tags: ['默认分类', '日常', '测试'],
-                    comments: 1
-                }
-            },
-
-
+            article: {},
+            errMsg: ''
         }
     },
+    methods: {
+        onLoad() {
+            getArticleById({id: this.$route.query.id}).then(result=>{
+                this.article = result
+            }).catch(err=>{
+                this.article = ''
+                this.errMsg = err
+            })
+            
+        }
+    },
+    mounted() {
+        this.onLoad()
+    }
+
 }
 </script>
 

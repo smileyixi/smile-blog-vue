@@ -1,90 +1,91 @@
 <template>
-  <div id="app">
-      <el-container style="margin: 0; padding: 0">
-      <Header></Header>
-      <el-main>
-        <div class="wrapper">
-          <!-- headerBar -->
-          <header :style="`background-image: url(${tit_bg})`">
-            <div class="description" style="float: right">
-              <a :href="siteUrl" style="cursor: pointer;">
-                <!-- 博客标题 -->
-                <h1 class="effect_1" :style="`background-image: url(${tit_font_bg})`" >
-                  {{siteTitle}}
-                </h1>
-              </a>
-              
-              <!-- 个性标签 -->
-              <h2>{{siteDescription}}</h2>
-
-              <!-- 导航栏 -->
-              <nav>
-                <div class="bitcron_nav_container">
-                  <ul class="site_nav" >
-                    <li v-for="(item, index) in siteNavBar" :key="index">
-                      <a :href="item.path" style="cursor: pointer;user-select: none;">{{item.name}}</a>
-                    </li>
-                  </ul>
-                </div>
-              </nav>
-
-            </div>
-          </header>
-
-          <!-- content -->
-          <main class="contents">
-            <!-- 文章列表 -->
-            <router-view></router-view>
+  <el-container style="margin: 0; padding: 0;">
+    <Header></Header>
+    <el-main>
+      <div class="wrapper" id="wrapper">
+        <!-- headerBar -->
+        <header :style="`background-image: url(${tit_bg})`" id="header">
+          <div class="description" style="float: right">
+            <a :href="siteUrl" style="cursor: pointer;">
+              <!-- 博客标题 -->
+              <h1 class="effect_1" :style="`background-image: url(${tit_font_bg})`" >
+                {{siteTitle}}
+              </h1>
+            </a>
             
-            <!-- 底部 -->
-            <!-- <section class="list-page" v-if="this.$router.path == '/'">
-              <div class="clear"></div>
-            </section> -->
-          </main>
-        </div>
-        <!-- 聚合列表 -->
-        <aside class="aside ">
-          <!-- 文章 -->
-          <div class="aside-left sidebar">
-            <h3>随机文章</h3>
-            <ul>
-              <li style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
-                  :title="asideArt.title"
-                  v-for="(asideArt, index) in asideArticleList" :key="index"
-                ><a @click.stop="toRouter(asideArt.url)" style="cursor: pointer;">{{asideArt.title}}</a>
-              </li>
-            </ul>	
-            <div class="clear"></div>
-          </div>
+            <!-- 个性标签 -->
+            <h2 class="autograph">{{siteDescription}}</h2>
 
-          <!-- 标签 -->
-          <div class="aside-right sidebar">
-            <h3>分门别类</h3>
-            <ul>
-              <li v-for="(asideCate, index) in asideCategoryList" :key="index">
-                <a :href="asideCate.url" style="cursor: pointer;">{{asideCate.title}}<span> {{asideCate.count}}篇</span></a></li>
-              </ul>
+            <!-- 导航栏 -->
+            <nav>
+              <div class="bitcron_nav_container">
+                <ul class="site_nav" >
+                  <li v-for="(item, index) in siteNavBar" :key="index">
+                    <a :href="item.path" style="cursor: pointer;user-select: none;">{{item.name}}</a>
+                  </li>
+                </ul>
+              </div>
+            </nav>
+
           </div>
-        </aside>
-      </el-main>
-      <Footer></Footer>
-    </el-container>
-  </div>
+        </header>
+
+        <!-- content -->
+        <main class="contents">
+          <!-- 文章列表 -->
+          <ArticleList v-show="this.$route.path == '/'"/>
+          <router-view name="article_lsit"></router-view>
+          
+          <!-- 底部 -->
+          <!-- <section class="list-page" v-if="this.$router.path == '/'">
+            <div class="clear"></div>
+          </section> -->
+        </main>
+      </div>
+      <!-- 聚合列表 -->
+      <aside class="aside ">
+        <!-- 文章 -->
+        <div class="aside-left sidebar">
+          <h3>随机文章</h3>
+          <ul>
+            <li style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
+                :title="asideArt.title"
+                v-for="(asideArt, index) in asideArticleList" :key="index"
+              ><a @click.stop="toRouter(asideArt.url)" style="cursor: pointer;">{{asideArt.title}}</a>
+            </li>
+          </ul>	
+          <div class="clear"></div>
+        </div>
+
+        <!-- 标签 -->
+        <div class="aside-right sidebar">
+          <h3>分门别类</h3>
+          <ul>
+            <li v-for="(asideCate, index) in asideCategoryList" :key="index">
+              <a :href="asideCate.url" style="cursor: pointer;">{{asideCate.title}}<span> {{asideCate.count}}篇</span></a></li>
+            </ul>
+        </div>
+      </aside>
+    </el-main>
+    <Footer></Footer>
+  </el-container>
 </template>
 
 <script>
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
+import ArticleList from "../components/ArticleList.vue";
 
 export default {
   name: "MainIndex",
-  components: { Header, Footer },
+  components: { Header, Footer, ArticleList },
   data() {
     return {
       // source
       tit_bg: require("@/assets/img/tit_bg.jpg"),
       photo: require("@/assets/img/photo.png"),
       tit_font_bg: require("@/assets/img/tit_font_bg.jpg"),
+      bg: require("@/assets/img/bg.png"),
       // 主题设置
       siteUrl: 'http://127.0.0.1:8080',
       siteTitle: '霜冷的秘密基地',
@@ -149,34 +150,30 @@ export default {
 </script>
 
 <style lang="less" scoped>
-* {
-  margin: 0;
-  padding: 0;
+@media screen and (max-width: 700px) {
+  #wrapper {
+    margin-top: 0 !important;
+  }
+  .sidebar ul {
+    flex-direction: column;
+    margin-left: 0!important;
+  }
 }
-#app {
-  width: 100vw;
-  height: 100vh;
+@media screen and (max-width: 550px) {
+  #header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30pt 5%;
+    transition: all 0.6s ease;
+  }
+  
 }
-body {
-    width: 100vw;
-    height: 100vh;
-    margin: 0 auto;
-    color: #333;
-    background: #f7f7f7;
-    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-    line-height: 2em;
-    text-align: justify;
-    word-wrap: break-word;
-    background-attachment: fixed;
-}
+
 a {
   text-decoration: none;
 }
-.wrapper {
+#wrapper {
   max-width: 820px;
   background: #fff;
   margin: 0 auto;
@@ -320,12 +317,15 @@ a {
     ul {
       list-style: square;
       margin-left: 1em;
+      display: flex;
+      flex-wrap: wrap;
     }
     ul > li {
       font-size: 9pt;
       float: left;
       width: 50%;
       display: block;
+      flex-shrink: 0;
 
       a {
         list-style: square;

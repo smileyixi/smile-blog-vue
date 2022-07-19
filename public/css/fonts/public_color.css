@@ -1,0 +1,66 @@
+.font_Primary{color: #FFB43A}
+.bg_Primary{background-color:#FFB43A}
+.border_Primary{border: 1px solid #FFB43A}
+
+.font_Success{color: #67C23A}
+.bg_Success{background-color:#67C23A}
+.border_Success{border: 1px solid #67C23A}
+
+.font_Warning{color: #F2CE00}
+.bg_Warning{background-color:#F2CE00}
+.border_Warning{border: 1px solid #F2CE00}
+
+.font_Danger{color: #F56C6C}
+.bg_Danger{background-color:#F56C6C}
+.border_Danger{border: 1px solid #F56C6C}
+
+.font_Info{color: #909399}
+.bg_Info{background-color:#909399}
+.border_Info{border: 1px solid #909399}
+
+.font_Primary_Text{color: #303133}
+.bg_Primary_Text{background-color:#303133}
+.border_Primary_Text{border: 1px solid #303133}
+
+.font_Regular_Text{color: #606266}
+.bg_Regular_Text{background-color:#606266}
+.border_Regular_Text{border: 1px solid #606266}
+
+.font_Secondary_Text{color: #909399}
+.bg_Secondary_Text{background-color:#909399}
+.border_Secondary_Text{border: 1px solid #909399}
+
+.font_Placeholder{color: #C0C4CC}
+.bg_Placeholder{background-color:#C0C4CC}
+.border_Placeholder{border: 1px solid #C0C4CC}
+
+.font_Border_Base{color: #DCDFE6}
+.bg_Border_Base{background-color:#DCDFE6}
+.border_Border_Base{border: 1px solid #DCDFE6}
+
+.font_Border_Light{color: #E4E7ED}
+.bg_Border_Light{background-color:#E4E7ED}
+.border_Border_Light{border: 1px solid #E4E7ED}
+
+.font_Border_Lighter{color: #EBEEF5}
+.bg_Border_Lighter{background-color:#EBEEF5}
+.border_Border_Lighter{border: 1px solid #EBEEF5}
+
+.font_Border_Extralight{color: #F2F6FC}
+.bg_Border_Extralight{background-color:#F2F6FC}
+.border_Border_Extralight{border: 1px solid #F2F6FC}
+
+.font_Background_B{color: #000000}
+.bg_Background_B{background-color:#000000}
+.border_Background_B{border: 1px solid #000000}
+
+.font_Background_W{color: #FFFFFF}
+.bg_Background_W{background-color:#FFFFFF}
+.border_Background_W{border: 1px solid #FFFFFF}
+
+
+/* 自定义颜色 */
+.bg_LoginColor {background-color: rgb(250, 156, 94) !important;}
+.bg_ResetPwdColor {background-color: rgb(69, 113, 217) !important;}
+.font_LoginColor {color:rgb(250, 156, 94) !important;}
+.font_ResetPwdColor {color:rgb(69, 113, 217) !important;}
