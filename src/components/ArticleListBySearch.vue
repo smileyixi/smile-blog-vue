@@ -40,7 +40,7 @@
       </article>
     </section>
     <!-- 底部分页 -->
-    <section class="list-page" v-if="this.$route.path == '/'">
+    <section class="list-page" v-if="this.$route.path == '/search'">
     <a class="next" :href="nextUrl" @click="nextPage" v-show="next">下一页<i class="iconfont icon-right"></i></a>
     <a class="prev" :href="preUrl" @click="prePage" v-show="pre"><i class="iconfont icon-left"></i>上一页</a>
       <div class="clear"></div>
@@ -57,25 +57,23 @@ export default {
       return {
         articleList: [],
         errMsg: '',
-        next: false,
-        pre: false,
+        next: true,
+        pre: true,
         loopLoadDataTimer: ''
       }
     },
     methods: {
       toRouter(id){
         this.$router.push({
-          path: "/article",
-          query: {
-            id: id
-          }
+          path: "/article?id="+id
         })
       },
       // 加载数据
       dataLoad() {
         const page = this.$route.query.page?this.$route.query.page:1
+        var keyword = this.$route.query.keyword?this.$route.query.keyword:''
         var skip = 5*(parseInt(page)-1)
-        getBlogList({limit: 6, skip}).then(result=>{
+        getBlogList({limit: 6, skip, keyword}).then(result=>{
           var next = this.next
           var pre = this.pre
           var page = parseInt(this.$route.query.page)
@@ -101,7 +99,7 @@ export default {
             else if(page>1) {
               this.loadNext(skip+5)
               // 判断下一页有数据则可点击下一页
-              if (JSON.parse(localStorage.getItem('tempArticleList')).length > 0) next = true
+              if (JSON.parse(localStorage.getItem('tempSearchArticleList')).length > 0) next = true
               else next = false
               pre = true
             }
@@ -119,10 +117,11 @@ export default {
       // 加载下一次的数据
       loadNext() {
         const page = this.$route.query.page?this.$route.query.page:1
+        var keyword = this.$route.query.keyword?this.$route.query.keyword:''
         var skip = 5*(parseInt(page)-1)
         // 请求6条数据
-        getBlogList({limit: 6, skip}).then(result=>{
-          localStorage.setItem('tempArticleList', JSON.stringify(result.data))
+        getBlogList({limit: 6, skip, keyword}).then(result=>{
+          localStorage.setItem('tempSearchArticleList', JSON.stringify(result.data))
         }).catch(err=>{
           // 请求错误
           this.errMsg = err

@@ -1,6 +1,13 @@
 import VueRouter from 'vue-router'
 import store from '@/store'
 
+//获取原型对象上的push函数
+const originalPush = VueRouter.prototype.push
+//修改原型对象中的push方法
+VueRouter.prototype.push = function push(location) {
+   return originalPush.call(this, location).catch(err => err)
+}
+
 const router = new VueRouter({
     mode: "history",
     routes: [
@@ -13,12 +20,23 @@ const router = new VueRouter({
             },
             children: [
                 {
-                    path: 'archive',
-                    name: 'archive',
+                    path: 'article',
                     components: {
-                        article_lsit:()=>import('@/components/Archive.vue')
+                        index_view:()=>import('@/components/Article.vue')
                     }
                 },
+                {
+                    path: 'archive',
+                    components: {
+                        index_view:()=>import('@/components/Archive.vue')
+                    }
+                },
+                {
+                    path: 'search',
+                    components: {
+                        index_view:()=>import('@/components/ArticleListBySearch.vue')
+                    }
+                }
             ]
         },
         {
@@ -41,6 +59,7 @@ const router = new VueRouter({
         
     ]
 })
+
 
 // 全局前置守卫：初始化时执行、每次路由切换前执行
 router.beforeEach((to,from,next)=>{

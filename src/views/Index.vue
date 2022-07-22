@@ -1,6 +1,19 @@
 <template>
   <el-container style="margin: 0; padding: 0;">
+     <!--加载动画 -->
+    <div id="loading" v-if="isLoading" class="loading">
+      <div class="blur"></div>
+      <svg width="128" height="128" viewBox="0 0 128 128" class="svg-loading">
+        <filter id="displacementFilter">
+          <feTurbulence type="turbulence" baseFrequency="0.047624336107621165" numOctaves="2" result="turbulence" style="transform: scale(1);"></feTurbulence>
+          <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="14.334814110133927" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+        </filter>
+        <polygon points="64 68.64 8.574 100 63.446 67.68 64 4 64.554 67.68 119.426 100" 
+        style="filter: url(&quot;#displacementFilter&quot;); transform: scale(1);stroke:#55e8b2;stroke-width:6;stroke-opacity:0.1" fill="#159969"></polygon>
+      </svg>
+    </div>
     <Header></Header>
+    
     <el-main>
       <div class="wrapper" id="wrapper">
         <!-- headerBar -->
@@ -33,15 +46,12 @@
         <!-- content -->
         <main class="contents">
           <!-- 文章列表 -->
-          <ArticleList v-show="this.$route.path == '/'"/>
-          <router-view name="article_lsit"></router-view>
-          
-          <!-- 底部 -->
-          <!-- <section class="list-page" v-if="this.$router.path == '/'">
-            <div class="clear"></div>
-          </section> -->
+          <ArticleList v-show="this.$route.path == '/'" :disLoading="disLoading"/>
+          <router-view name="index_view"></router-view>
+
         </main>
       </div>
+
       <!-- 聚合列表 -->
       <aside class="aside ">
         <!-- 文章 -->
@@ -51,7 +61,7 @@
             <li style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
                 :title="asideArt.title"
                 v-for="(asideArt, index) in asideArticleList" :key="index"
-              ><a @click.stop="toRouter(asideArt.url)" style="cursor: pointer;">{{asideArt.title}}</a>
+              ><a :href="siteUrl+'/article?id='+asideArt._id" style="cursor: pointer;">{{asideArt.title}}</a>
             </li>
           </ul>	
           <div class="clear"></div>
@@ -75,6 +85,9 @@
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 import ArticleList from "../components/ArticleList.vue";
+import { getBlogList } from '@/request/blogApi'
+import { getCategoryList, getCategoryCount } from '@/request/categoryApi'
+import anime from 'animejs'
 
 export default {
   name: "MainIndex",
@@ -101,7 +114,7 @@ export default {
         },
         {
           name: '归档',
-          path: "/archives",
+          path: "/archive",
         },
         {
           name: '订阅',
@@ -110,41 +123,88 @@ export default {
         
       ],
       // 博客数据
-      asideArticleList: [ // 聚合文章列表
-        {
-          title: '欢迎使用 Smile-Blog',
-          url: 'http://smilesl.com/index.php/archives/1/',
-        },
-        {
-          title: '欢迎使用 Smile-Blog',
-          url: 'http://smilesl.com/index.php/archives/2/',
-        }
-      ],
+      asideArticleList: [], // 聚合文章列表
       asideCategoryList: [  // 聚合分类列表
         {
-          title: '默认分类',
-          url: 'http://smilesl.com/index.php/category/default/',
-          count: 1
-        },
-        {
-          title: '日常',
-          url: 'http://smilesl.com/index.php/category/daily/',
-          count: 1
-        },
-        {
-          title: '测试',
-          url: 'http://smilesl.com/index.php/category/test/',
-          count: 1
+          title: 'category',
+          url: '#',
+          count: 0
         }
       ],
+      isLoading: true,
+      errMsg: '',
 
     };
   },
     methods: {
-      toRouter(path){
-        this.$router.push({
-          path: path})
+      // 加载聚合列表
+      loadData() {
+        // 随机文章
+        for(let i = 0; i < 5; i++) {
+            getBlogList({limit: 5, random: 'true', small: 'true'}).then(result=>{
+              this.errMsg = ''
+              this.asideArticleList.push(result.data)
+            }).catch(err=>{
+              this.errMsg = err
+            })
+        }
+
+        // 分门别类
+        getCategoryList({}).then(result=>{
+          this.asideCategoryList = result.data
+          this.asideCategoryList.forEach(asideCate => {
+            // 获取分类数量
+            getCategoryCount({cid: asideCate._id}).then(result=>{
+              asideCate.count = result.data
+            }).catch(err=>{
+              this.errMsg = err
+            })
+          });
+        })
+      },
+      // 加载动画
+      loading() {
+        anime({
+          targets: ['.svg-loading polygon'],
+          points: '64 128 8.574 96 8.574 32 64 0 119.426 32 119.426 96',
+          baseFrequency: 0,
+          scale: 1,
+          loop: true,
+          fill: "#57d3eb",
+          stroke: "#b4f6f1",
+          strokeOpacity: 0.9,
+          direction: 'alternate',
+          easing: 'easeInOutExpo'
+        });
+      },
+      // 关闭加载
+      disLoading() {
+        anime({
+          targets: '.loading',
+          opacity: '0',
+          duration: 3000,
+          easing: 'easeInOutExpo'
+        });
+        setTimeout(() => {
+          this.isLoading=false
+        }, 2000);
       }
+    },
+    watch: {
+      // 加载数据后，解除loding状态
+      asideArticleList() {
+        if(this.errMsg==='' && this.asideArticleList.length < 1) {
+          this.disLoading()
+          this.loadData()
+        }else {
+          this.errMsg===''
+        }
+      }
+    },
+    mounted(){
+      this.loadData()
+      this.loading()
+      this.$bus.$on('disLoading', this.disLoading)
     }
 };
 </script>
@@ -277,19 +337,6 @@ a {
     }
   }
 
-  // 文章内容
-  .contents {
-    // 底部列表块
-    .list-page {
-      padding: 30px 20px;
-      font-size: .875em;
-      margin: 0 30px;
-      .clear {
-        clear: both;
-      }
-    }
-  }
-
 }
 
 .aside {
@@ -342,5 +389,34 @@ a {
   }
   
 }
+
+// loading
+#loading {
+    position: fixed !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 999;
+    background: #000;
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+.blur {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -999;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(20px);
+}
+
 
 </style>
