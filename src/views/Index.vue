@@ -1,6 +1,9 @@
 <template>
-  <el-container style="margin: 0; padding: 0;">
-     <!--加载动画 -->
+  <section style="margin: 0; padding: 0;" class="conBox">
+    <!-- 插件 -->
+    <canvas id="Snow" width="100%" height="100%"></canvas>
+
+    <!--加载动画 -->
     <div id="loading" v-if="isLoading" class="loading">
       <div class="blur"></div>
       <svg width="128" height="128" viewBox="0 0 128 128" class="svg-loading">
@@ -14,7 +17,7 @@
     </div>
     <Header></Header>
     
-    <el-main>
+    <main>
       <div class="wrapper" id="wrapper">
         <!-- headerBar -->
         <header :style="`background-image: url(${tit_bg})`" id="header">
@@ -33,8 +36,11 @@
             <nav>
               <div class="bitcron_nav_container">
                 <ul class="site_nav" >
+                  <li>
+                    <a :href="siteUrl" style="cursor: pointer;user-select: none;">首页</a>
+                  </li>
                   <li v-for="(item, index) in siteNavBar" :key="index">
-                    <a :href="item.path" style="cursor: pointer;user-select: none;">{{item.name}}</a>
+                    <a @click="toPages(item.path)" style="cursor: pointer;user-select: none;">{{item.name}}</a>
                   </li>
                 </ul>
               </div>
@@ -72,13 +78,13 @@
           <h3>分门别类</h3>
           <ul>
             <li v-for="(asideCate, index) in asideCategoryList" :key="index">
-              <a :href="asideCate.url" style="cursor: pointer;">{{asideCate.title}}<span> {{asideCate.count}}篇</span></a></li>
+              <a @click="toCategory(asideCate._id)" style="cursor: pointer;">{{asideCate.title}}<span> {{asideCate.count}}篇</span></a></li>
             </ul>
         </div>
       </aside>
-    </el-main>
+    </main>
     <Footer></Footer>
-  </el-container>
+  </section>
 </template>
 
 <script>
@@ -88,6 +94,7 @@ import ArticleList from "../components/ArticleList.vue";
 import { getBlogList } from '@/request/blogApi'
 import { getCategoryList, getCategoryCount } from '@/request/categoryApi'
 import anime from 'animejs'
+import { snow } from '@/plugins/snow'
 
 export default {
   name: "MainIndex",
@@ -101,20 +108,16 @@ export default {
       bg: require("@/assets/img/bg.png"),
       // 主题设置
       siteUrl: 'http://127.0.0.1:8080',
-      siteTitle: '霜冷的秘密基地',
+      siteTitle: '霜冷の秘密基地',
       siteDescription: '幽暗让我们向往光明',
       siteNavBar: [   // 导航栏
         {
-          name: '首页',
-          path: '/',
-        },
-        {
           name: '关于',
-          path: "/about",
+          path: "about",
         },
         {
           name: '归档',
-          path: "/archive",
+          path: "archive",
         },
         {
           name: '订阅',
@@ -137,6 +140,21 @@ export default {
     };
   },
     methods: {
+      // to pages
+      toPages(path) {
+        this.$router.push({
+          name: path
+        })
+      },
+      // 前往分类
+      toCategory(cid) {
+        this.$router.push({
+          path: `/category/${cid}`
+        })
+        // if(this.$route.path == `/category/${cid}`) {
+        //   this.$router.go(0)
+        // }
+      },
       // 加载聚合列表
       loadData() {
         // 随机文章
@@ -177,17 +195,17 @@ export default {
           easing: 'easeInOutExpo'
         });
       },
-      // 关闭加载
+      // 关闭加载动画
       disLoading() {
         anime({
           targets: '.loading',
           opacity: '0',
-          duration: 3000,
+          duration: 2000,
           easing: 'easeInOutExpo'
         });
         setTimeout(() => {
           this.isLoading=false
-        }, 2000);
+        }, 1200);
       }
     },
     watch: {
@@ -199,12 +217,15 @@ export default {
         }else {
           this.errMsg===''
         }
-      }
+      },
     },
     mounted(){
       this.loadData()
       this.loading()
       this.$bus.$on('disLoading', this.disLoading)
+
+      // 插件开关
+      snow(true)
     }
 };
 </script>
@@ -232,6 +253,16 @@ export default {
 
 a {
   text-decoration: none;
+}
+#Snow{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+    background: rgba(194,199,199,0.1);
+    pointer-events: none;
 }
 #wrapper {
   max-width: 820px;

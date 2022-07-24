@@ -1,9 +1,9 @@
 <template>
   <section class="article-detail">
     <!-- 错误信息 -->
-    <p>
+    <!-- <p>
     {{errMsg}}
-    </p>
+    </p> -->
     <!-- 文章内容 -->
     <article class="content">
         <h1 style="margin: 1em 0">{{article.title}}</h1>
@@ -32,23 +32,48 @@
     </article>
     <!-- 换页 -->
     <section class="pager">
-        <a class="pre" href="http://localhost:8080/archive/1/">上一页</a>
-        <a class="next" href="http://localhost:8080/archive/2/">下一页</a>
+        <a class="pre" 
+        @click="toRouter(preArt._id)" 
+        v-show="preArt._id">{{preArt.title}}</a>
+        <a class="next" 
+        @click="toRouter(nextArt._id)" 
+        v-show="nextArt._id">{{nextArt.title}}</a>
+        <!-- <a class="pre" 
+        :href="`${siteUrl}/article?id=${preArt._id}`" 
+        v-if="preArt._id">{{preArt.title}}</a>
+        <a class="next" 
+        :href="`${siteUrl}/article?id=${nextArt._id}`" 
+        v-if="nextArt._id">{{nextArt.title}}</a> -->
     </section>
   </section>
 </template>
 
 <script>
-import { getArticleById } from '@/request/blogApi'
+import { getArticleById, getPreById, getNextById } from '@/request/blogApi'
 export default {
     name: 'Article',
     data() {
         return {
+            siteUrl: 'http://localhost:8080',
             article: {},
-            errMsg: ''
+            errMsg: '',
+            nextArt: '',
+            preArt: '',
+            isReloadData: true, //局部刷新标识
         }
     },
+    watch: {
+        '$route'(to,from){
+            this.onLoad()
+            this.bindNextPre()
+        } 
+    },
     methods: {
+        toRouter(id) {
+            this.$router.push({
+                path: '/article?id=' + id
+            })
+        },
         onLoad() {
             // 获取文章详情
             getArticleById({id: this.$route.query.id}).then(result=>{
@@ -60,10 +85,31 @@ export default {
                 this.errMsg = err
             })
             
-        }
+        },
+        // 分页参数
+        bindNextPre() {
+            getPreById({id: this.$route.query.id}).then(result=>{
+                this.preArt = result.data // 获取id，title，以及是否存在上一篇文章
+                if(result.data.title && result.data.title.length > 7) {
+                    this.preArt.title = result.data.title.slice(0, 7)+".."
+                }
+            }).catch(err=>{
+                this.errMsg = err
+            })
+            getNextById({id: this.$route.query.id}).then(result=>{
+                this.nextArt = result.data  // 获取id，title，以及是否存在下一篇文章
+                if(result.data.title && result.data.title.length > 15) {
+                    this.nextArt.title = result.data.title.slice(0, 15)+".."
+                }
+            }).catch(err=>{
+                this.errMsg = err
+            })
+            
+        },
     },
     mounted() {
         this.onLoad()
+        this.bindNextPre()
     }
 
 }
@@ -120,10 +166,13 @@ export default {
         text-decoration: none;
         line-height: 1em;
         text-align: center;
-        transition: .5s;
+        transition: .3s;
     }
     a:hover {
+        color: rgb(91, 91, 91);
         background: #eee;
+        cursor: pointer;
+        user-select: none;
     }
     .pre {
         float: left;

@@ -2,7 +2,9 @@ import Vue from "vue"
 import Vuex from "vuex"
 
 Vue.use(Vuex)
-const mutations= {
+const actions = {}
+
+const mutations = {
     // load token from localStorage
     loadToken(state) {
         state.user.token = localStorage.getItem('token')
@@ -13,7 +15,7 @@ const mutations= {
         state.user.token = token
     }
 }
-const state= {
+const state = {
     // 模拟用户数据
     user: {
         id: 1,
@@ -23,5 +25,5 @@ const state= {
 }
 
 export default new Vuex.Store({
-    mutations, state
+    actions, mutations, state
 })

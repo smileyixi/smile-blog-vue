@@ -26,9 +26,9 @@ const router = new VueRouter({
                     }
                 },
                 {
-                    path: 'archive',
+                    path: 'category/:cid',
                     components: {
-                        index_view:()=>import('@/components/Archive.vue')
+                        index_view:()=>import('@/components/Category.vue')
                     }
                 },
                 {
@@ -36,7 +36,21 @@ const router = new VueRouter({
                     components: {
                         index_view:()=>import('@/components/ArticleListBySearch.vue')
                     }
-                }
+                },
+                {
+                    path: 'archive',
+                    name: 'archive',
+                    components: {
+                        index_view:()=>import('@/views/Archive.vue')
+                    }
+                },
+                {
+                    path: 'about',
+                    name: 'about',
+                    components: {
+                        index_view:()=>import('@/views/About.vue')
+                    }
+                },
             ]
         },
         {
@@ -49,13 +63,10 @@ const router = new VueRouter({
             component: ()=>import('@/views/404.vue')
         },
         {
-            path: '/about',
-            component: ()=>import('@/views/About.vue')
-        },
-        {
-            path: '/test',
-            component: ()=>import('@/views/Test.vue')
-        },
+            name: "refresh",
+            path: `/refresh`,
+            component: () => import('@/components/Refresh.vue')    
+        }
         
     ]
 })

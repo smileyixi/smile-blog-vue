@@ -8,7 +8,7 @@ import store from '@/store/index'
 import router from '@/router'
 import { Message } from 'element-ui';
 
-axios.defaults.baseURL = 'http://127.0.0.1:8888'
+axios.defaults.baseURL = 'http://192.168.31.78:8888'
 axios.defaults.timeout = 6000
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 
@@ -41,7 +41,13 @@ axios.interceptors.response.use(
             switch (error.response.status) {
                 // 401: 未登录
                 // 未登录则跳转登录页面，并携带当前页面的路径
-                // 在登录成功后返回当前页面，这一步需要在登录页操作。      
+                // 在登录成功后返回当前页面，这一步需要在登录页操作。  
+                case 400: 
+                    Message({
+                        message: '数据都不见了X﹏X',
+                        type: 'error'
+                    })
+                    break
                 case 401:
                     router.replace({
                         path: '/login',

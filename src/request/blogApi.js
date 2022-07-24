@@ -15,12 +15,39 @@ export const getBlogList = (params) => {
 }
 
 /**
+ * 获取分类下文章列表
+ * @param {*} params {cid:分类id}
+ * @returns 
+ */
+export const getBlogListWithCategory = (params) => {
+    return get('api/blog/cateArt', params)
+}
+
+/**
  * 查询单个文章通过id
  * @param {Object} params 
  * @returns 
  */
 export const getArticleById = (params) => {
     return get('api/blog/articleDetail', params)
+}
+
+/**
+ * 查询当前id的上一篇文章
+ * @param {*} params 
+ * @returns 
+ */
+export const getPreById = (params) => {
+    return get('api/blog/pre', params)
+}
+
+/**
+ * 查询当前id的下一篇文章
+ * @param {*} params 
+ * @returns 
+ */
+ export const getNextById = (params) => {
+    return get('api/blog/next', params)
 }
 
 

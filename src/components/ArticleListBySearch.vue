@@ -59,7 +59,7 @@ export default {
         errMsg: '',
         next: true,
         pre: true,
-        loopLoadDataTimer: ''
+        loopLoadDataTimer: '',
       }
     },
     methods: {
@@ -78,11 +78,10 @@ export default {
           var pre = this.pre
           var page = parseInt(this.$route.query.page)
           this.articleList = result = result.data
-          
           // 无下一页
           if (result.length <= 5) {
             this.errMsg = ''
-            next, pre = false
+            next = pre = false
             if(page > 1) {
               pre = true
             }
@@ -137,11 +136,11 @@ export default {
     computed: {
       nextUrl() {
         var page = this.$route.query.page?parseInt(this.$route.query.page)+1:2
-        return "/?page="+page
+        return `/search?keyword=${this.$route.query.keyword}&page=`+page
       },
       preUrl() {
         var page = this.$route.query.page>=1?this.$route.query.page-1:1
-        return "/?page="+page
+        return `/search?keyword=${this.$route.query.keyword}&page=`+page
       }
     },
     watch: {
@@ -155,7 +154,7 @@ export default {
     mounted() {
       this.dataLoad()
       this.loadNext()
-    }
+    },
 }
 </script>
 

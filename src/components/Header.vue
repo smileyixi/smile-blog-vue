@@ -1,5 +1,5 @@
 <template>
-  <el-header id="headerbox">
+  <header id="headerbox">
     <!--头像头部-->
     <div id="header" style="margin-top: 5px">
       <nav id="headerNav">
@@ -29,17 +29,16 @@
         </div>
       </nav>
     </div>
-  </el-header>
+  </header>
 </template>
 
 <script>
 import anime from "animejs";
-import { getBlogList } from '@/request/blogApi';
 export default {
   name: "Header",
   data() {
     return {
-      siteUrl: "http://localhost:8081",
+      siteUrl: "http://localhost:8080",
       os: '', // 系统
       mainKeyIcon: '',  // 搜索主图标
       mainKey: '',      // 搜索主键
@@ -58,16 +57,29 @@ export default {
     preSearch(){
       this.loadSearch(200)
       this.$refs.inputSearch.focus()
+      // 推荐搜索
+      this.$refs.inputSearch.placeholder = '阁下需要看的什么呢？'
     },
     // 关闭搜索栏
     disSearch() {
       this.loadSearch(90)
       this.$refs.inputSearch.blur()
+      // 恢复默认
+      this.$refs.inputSearch.placeholder = `搜索（${this.mainKeyIcon} + K)`
     },
     // 搜索方法
     search() {
       if(this.searchKeyword !== '') {
-        this.$router.push({path: '/search?keyword='+this.searchKeyword})
+        this.$router.push({
+          path: '/search',
+          query: {
+            keyword: this.searchKeyword,
+            date:new Date().getTime()
+          }
+        })
+      }
+      if(this.$route.path == '/search') {
+        this.$router.go(0)
       }
       this.disSearch()
     },
@@ -110,9 +122,6 @@ export default {
         if(event.keyCode == 91 && event.key == this.mainKey) {
           this.preSearch()
         }
-        else if(event.key == 'F12') {
-          this.consoleGura()
-        }
         // 关闭
         else if(event.key == 'Escape') {
           this.disSearch()
@@ -124,6 +133,7 @@ export default {
     this.loadSearch(90)
     this.keyDown()
     this.detectOS()
+    this.consoleGura()
   }
 };
 </script>

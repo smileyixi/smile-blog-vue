@@ -1,5 +1,5 @@
 <template>
-  <el-footer id="footer">
+  <footer id="footer">
     <span
       >© 2022 霜冷的秘密基地 -
       <a href="http://localhost:8080/archive" style="cursor: pointer"
@@ -18,7 +18,7 @@
       >
     </div>
     <div class="footer_slogan"></div>
-  </el-footer>
+  </footer>
 </template>
 
 <script>

@@ -1,17 +1,12 @@
 <template>
   <div>
     <section class="article-list">
-      <!-- 错误信息 -->
-      <div v-if="errMsg">
-        <p>
-          {{errMsg}}
-        </p>
-      </div>
       <article style="margin-top: 50px;" class="article" 
-      v-for="article in articleList" :key="article._id">
+      v-for="(article, index) in articleList" :key="index">
         <!-- 标题 -->
         <h2 style="margin: 1em 0">
-          <a @click="toRouter(article._id)" class="article_title">{{article.title}}</a>
+          <a @click="toRouter(article._id)" 
+          class="article_title">{{article.title}}</a>
           <span class="hot">{{article.hot}}度</span>
         </h2>
 
@@ -41,8 +36,8 @@
     </section>
     <!-- 底部分页 -->
     <section class="list-page" v-if="this.$route.path == '/'">
-    <a class="next" :href="nextUrl" @click="nextPage" v-show="next">下一页<i class="iconfont icon-right"></i></a>
-    <a class="prev" :href="preUrl" @click="prePage" v-show="pre"><i class="iconfont icon-left"></i>上一页</a>
+    <a class="next" @click="nextPage" v-show="next">下一页<i class="iconfont icon-right"></i></a>
+    <a class="prev" @click="prePage" v-show="pre"><i class="iconfont icon-left"></i>上一页</a>
       <div class="clear"></div>
     </section>
   </div>
@@ -55,6 +50,7 @@ export default {
     name: 'ArticleList',
     data() {
       return {
+        siteUrl: 'http://localhost:8080',
         articleList: [],
         errMsg: '',
         next: false,
@@ -65,10 +61,12 @@ export default {
     methods: {
       toRouter(id){
         this.$router.push({
-          path: "/article",
-          query: {
-            id: id
-          }
+          path: "/article?id="+id
+        })
+      },
+      toPage(page) {
+        this.$router.push({
+          path: "/?page=" + page
         })
       },
       // 加载数据
@@ -84,7 +82,7 @@ export default {
           // 无下一页
           if (result.length <= 5) {
             this.errMsg = ''
-            next, pre = false
+            next = pre = false
             if(page > 1) {
               pre = true
             }
@@ -129,10 +127,12 @@ export default {
         })
       },
       nextPage() {
-        this.dataLoad(5*(parseInt(page)-1))
+        const page = this.$route.query.page?this.$route.query.page:1
+        this.toPage(parseInt(page)+1)
       },
       prePage() {
-        this.dataLoad(-(5*(parseInt(page)-1)))
+        const page = this.$route.query.page?this.$route.query.page:1
+        this.toPage(parseInt(page)-1)
       }
     },
     computed: {
@@ -151,7 +151,11 @@ export default {
           this.$bus.$emit('disLoading')
           clearTimeout(this.loopLoadDataTimer)
         }
-      }
+      },
+      '$route'(to,from){
+        this.dataLoad()
+        this.loadNext()
+      } 
     },
     mounted() {
       this.dataLoad()
