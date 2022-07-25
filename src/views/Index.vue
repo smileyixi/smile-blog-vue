@@ -241,6 +241,11 @@ export default {
       } 
       this.$bus.$on('disLoading', this.disLoading)
 
+      // 监听刷新事件,刷新缓存
+       window.addEventListener("beforeunload", e => {
+          this.clearCache();
+      });
+
       // 插件开关
       snow(true)
       this.loading()
