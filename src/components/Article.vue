@@ -32,18 +32,12 @@
     </article>
     <!-- 换页 -->
     <section class="pager">
-        <a class="pre" 
+        <a class="pre" href="javascript:void(0);"
         @click="toRouter(preArt._id)" 
         v-show="preArt._id">{{preArt.title}}</a>
-        <a class="next" 
+        <a class="next" href="javascript:void(0);"
         @click="toRouter(nextArt._id)" 
         v-show="nextArt._id">{{nextArt.title}}</a>
-        <!-- <a class="pre" 
-        :href="`${siteUrl}/article?id=${preArt._id}`" 
-        v-if="preArt._id">{{preArt.title}}</a>
-        <a class="next" 
-        :href="`${siteUrl}/article?id=${nextArt._id}`" 
-        v-if="nextArt._id">{{nextArt.title}}</a> -->
     </section>
   </section>
 </template>
@@ -64,7 +58,9 @@ export default {
     },
     watch: {
         '$route'(to,from){
-            this.onLoad()
+            const art = JSON.parse(sessionStorage.getItem(`art_${this.$route.query.id}`))
+            if(!art) this.onLoad()
+            else this.article = art
             this.bindNextPre()
         } 
     },
@@ -80,6 +76,7 @@ export default {
                 this.article = result.data
                 // 时间格式化
                 this.article.createAt = this.article.createAt.slice(0,10)
+                sessionStorage.setItem(`art_${this.$route.query.id}`, JSON.stringify(this.article))
             }).catch(err=>{
                 this.article = {}
                 this.errMsg = err
@@ -108,7 +105,12 @@ export default {
         },
     },
     mounted() {
-        this.onLoad()
+        const art = JSON.parse(sessionStorage.getItem(`art_${this.$route.query.id}`))
+        if(!art) {
+            console.log(art)
+            this.onLoad()
+        }
+        else this.article = art
         this.bindNextPre()
     }
 

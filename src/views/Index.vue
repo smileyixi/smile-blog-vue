@@ -1,6 +1,5 @@
 <template>
   <section style="margin: 0; padding: 0;" class="conBox">
-    <!-- 插件 -->
     <canvas id="Snow" width="100%" height="100%"></canvas>
 
     <!--加载动画 -->
@@ -37,10 +36,10 @@
               <div class="bitcron_nav_container">
                 <ul class="site_nav" >
                   <li>
-                    <a :href="siteUrl" style="cursor: pointer;user-select: none;">首页</a>
+                    <a :href="siteUrl" @click="clearCache" style="cursor: pointer;user-select: none;">首页</a>
                   </li>
                   <li v-for="(item, index) in siteNavBar" :key="index">
-                    <a @click="toPages(item.path)" style="cursor: pointer;user-select: none;">{{item.name}}</a>
+                    <a href="javascript:void(0);" @click.stop="toPages(item.path)" style="cursor: pointer;user-select: none;">{{item.name}}</a>
                   </li>
                 </ul>
               </div>
@@ -78,7 +77,7 @@
           <h3>分门别类</h3>
           <ul>
             <li v-for="(asideCate, index) in asideCategoryList" :key="index">
-              <a @click="toCategory(asideCate._id)" style="cursor: pointer;">{{asideCate.title}}<span> {{asideCate.count}}篇</span></a></li>
+              <a href="javascript:void(0);" @click.stop="toCategory(asideCate._id)" style="cursor: pointer;">{{asideCate.title}}<span> {{asideCate.count}}篇</span></a></li>
             </ul>
         </div>
       </aside>
@@ -162,6 +161,9 @@ export default {
             getBlogList({limit: 5, random: 'true', small: 'true'}).then(result=>{
               this.errMsg = ''
               this.asideArticleList.push(result.data)
+              
+              if (i==4) sessionStorage.setItem('asideArtList', JSON.stringify(this.asideArticleList))
+
             }).catch(err=>{
               this.errMsg = err
             })
@@ -173,12 +175,14 @@ export default {
           this.asideCategoryList.forEach(asideCate => {
             // 获取分类数量
             getCategoryCount({cid: asideCate._id}).then(result=>{
-              asideCate.count = result.data
+              asideCate.count = result.data?result.data:0
             }).catch(err=>{
               this.errMsg = err
             })
+            sessionStorage.setItem('asideCateList', JSON.stringify(this.asideCategoryList))
           });
         })
+        
       },
       // 加载动画
       loading() {
@@ -206,7 +210,11 @@ export default {
         setTimeout(() => {
           this.isLoading=false
         }, 1200);
-      }
+      },
+      // 清除缓存
+      clearCache() {
+        sessionStorage.clear()
+      },
     },
     watch: {
       // 加载数据后，解除loding状态
@@ -220,12 +228,23 @@ export default {
       },
     },
     mounted(){
-      this.loadData()
-      this.loading()
+      const asideArtList = JSON.parse(sessionStorage.getItem('asideArtList'))
+      const asideCateList = JSON.parse(sessionStorage.getItem('asideCateList'))
+      
+      // 本地不存在加载
+      if((!asideArtList || asideArtList.length<1) || (!asideCateList || asideCateList.length<1)) {
+        this.loadData()
+      }
+      else { // 存在从本地加载数据
+        this.asideArticleList = asideArtList
+        this.asideCategoryList = asideCateList
+      } 
       this.$bus.$on('disLoading', this.disLoading)
 
       // 插件开关
       snow(true)
+      this.loading()
+      
     }
 };
 </script>

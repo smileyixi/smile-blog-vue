@@ -1,6 +1,7 @@
 <template>
   <div>
     <section class="article-list">
+      <el-skeleton :rows="3" animated v-if="errMsg !== ''" class="skeleton"/>
       <article style="margin-top: 50px;" class="article" 
       v-for="(article, index) in articleList" :key="index">
         <!-- 标题 -->
@@ -36,8 +37,8 @@
     </section>
     <!-- 底部分页 -->
     <section class="list-page" v-if="this.$route.path == '/'">
-    <a class="next" @click="nextPage" v-show="next">下一页<i class="iconfont icon-right"></i></a>
-    <a class="prev" @click="prePage" v-show="pre"><i class="iconfont icon-left"></i>上一页</a>
+      <a href="javascript:void(0);" class="next" @click.stop="nextPage" v-show="next">下一页<i class="iconfont icon-right"></i></a>
+      <a href="javascript:void(0);" class="prev" @click.stop="prePage" v-show="pre"><i class="iconfont icon-left"></i>上一页</a>
       <div class="clear"></div>
     </section>
   </div>
@@ -74,10 +75,11 @@ export default {
         const page = this.$route.query.page?this.$route.query.page:1
         var skip = 5*(parseInt(page)-1)
         getBlogList({limit: 6, skip}).then(result=>{
-          var next = this.next
-          var pre = this.pre
+          var next = sessionStorage.getItem('next')
+          var pre = sessionStorage.getItem('pre')
           var page = parseInt(this.$route.query.page)
           this.articleList = result = result.data
+          sessionStorage.setItem('artList', JSON.stringify(this.articleList) )
           
           // 无下一页
           if (result.length <= 5) {
@@ -97,15 +99,18 @@ export default {
             }
             // 不是第一页
             else if(page>1) {
-              this.loadNext(skip+5)
+              const isNext = JSON.parse(sessionStorage.gJSetItem(`tempArticleList_${page}`))
+              if (!isNext) this.loadNext(skip+5)
               // 判断下一页有数据则可点击下一页
-              if (JSON.parse(localStorage.getItem('tempArticleList')).length > 0) next = true
+              if (isNex.length > 1) next = true
               else next = false
               pre = true
             }
           }
           this.next = next
           this.pre = pre
+          sessionStorage.setItem('next', this.next)
+          sessionStorage.setItem('pre', this.pre)
         }).catch(err=>{
           this.errMsg = err
           this.loopLoadDataTimer = setTimeout(() => {
@@ -120,7 +125,7 @@ export default {
         var skip = 5*(parseInt(page)-1)
         // 请求6条数据
         getBlogList({limit: 6, skip}).then(result=>{
-          localStorage.setItem('tempArticleList', JSON.stringify(result.data))
+          sessionStorage.setItem(`tempArticleList_${page}`, JSON.stringify(result.data))
         }).catch(err=>{
           // 请求错误
           this.errMsg = err
@@ -135,31 +140,37 @@ export default {
         this.toPage(parseInt(page)-1)
       }
     },
-    computed: {
-      nextUrl() {
-        var page = this.$route.query.page?parseInt(this.$route.query.page)+1:2
-        return "/?page="+page
-      },
-      preUrl() {
-        var page = this.$route.query.page>=1?this.$route.query.page-1:1
-        return "/?page="+page
-      }
-    },
     watch: {
       articleList() {
         if(this.errMsg==='' || this.articleList.length > 1) {
           this.$bus.$emit('disLoading')
           clearTimeout(this.loopLoadDataTimer)
+          this.errMsg = ''
         }
       },
       '$route'(to,from){
-        this.dataLoad()
-        this.loadNext()
+        if(from.name == 'index') {
+          this.dataLoad()
+          this.loadNext()
+        }
       } 
     },
     mounted() {
-      this.dataLoad()
-      this.loadNext()
+      const artList = JSON.parse(sessionStorage.getItem('artList'))
+      const next = sessionStorage.getItem('next')
+      const pre = sessionStorage.getItem('pre')
+      
+      // 不存在加载数据
+      if(!artList || artList.length == 0) {
+        this.dataLoad()
+        this.loadNext()
+      } 
+      else this.articleList = artList // 存在从本地加载数据
+
+      if(next && pre) {
+        this.next = next==='true'?true:false
+        this.pre = pre==='true'?true:false
+      }
     }
 }
 </script>
@@ -167,6 +178,9 @@ export default {
 <style lang="less" scoped>
 a {
   text-decoration: none;
+}
+.skeleton {
+  margin-top: 40px;
 }
 // 文章列表块
 .article-list {

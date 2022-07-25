@@ -1,11 +1,9 @@
 <template>
   <footer id="footer">
-    <span
-      >© 2022 霜冷的秘密基地 -
+    <span>© 2022 霜冷的秘密基地 -
       <a href="http://localhost:8080/archive" style="cursor: pointer"
-        >1 Posts crafted</a
-      ></span
-    >
+        >1 Posts crafted</a>
+    </span>
     <span>
       ♥ copyRight By
       <a href="http://localhost:8080/" style="cursor: pointer"

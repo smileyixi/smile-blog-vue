@@ -4,15 +4,16 @@
     <div class="meta">
         {{meta}}
     </div>
+    <el-skeleton :rows="6" animated v-if="!archive_Group.length" class="skeleton"/>
     <!-- 文章归档 -->
     <div v-for="(archive_list, index) in archive_Group" :key="index" style="padding-bottom:20px">
         <h2 class="hrBox" >{{(archive_list[0].year).length>30?(archive_list[0].year).slice(0,30):archive_list[0].year}}</h2>
         <ul class="archived-posts archiveBar" v-infinite-scroll="load" style="overflow:auto"> 
             <li v-for="art in archive_list" :key="art._id">
                 <time class="post">{{art.month}}.{{art.day}}</time>
-                <a @click="toRouter(art._id)" class="post">{{art.title}}</a>
+                <a href="javascript:void(0);" @click="toRouter(art._id)" class="post">{{art.title}}</a>
                 <span class="post cate" v-for="cate in art.category" :key="cate._id">
-                    <a @click="toCategory(cate._id)">{{cate.title}}</a>
+                    <a href="javascript:void(0);" @click="toCategory(cate._id)">{{cate.title}}</a>
                 </span>
             </li>
         </ul>
@@ -30,6 +31,7 @@ export default {
             title: '归档',
             meta: '回首前尘,尽是可耻的过往',
             count: 0,
+            loopLoadDataTimer: '',
         }
     },
     methods: {
@@ -74,22 +76,37 @@ export default {
                 });
                 // 分组
                 this.archive_Group = this.sortClass(data)
-                console.log(this.archive_Group)
+                this.errMsg = ''
+                sessionStorage.setItem('artGroup', JSON.stringify(this.archive_Group))
             }).catch(err=>{
                 this.errMsg = err
+                this.loopLoadDataTimer = setTimeout(() => {
+                    if (this.errMsg!=='') this.onLoad()
+                }, 3000);
             })
         },
         load () {
             this.count += 2
         }
     },
+    watch: {
+        errMsg(oldV, newV) {
+            if(newV === '') clearTimeout(this.loopLoadDataTimer)
+        }
+    },
     mounted() {
-        this.onLoad()
+        const artGroup = JSON.parse(sessionStorage.getItem('artGroup'))
+        
+        if(!artGroup || artGroup.length == 0) this.onLoad() // 不存在加载数据
+        else this.archive_Group = artGroup // 存在从本地加载数据
     }
 }
 </script>
 
 <style lang="less" scoped>
+.skeleton {
+    padding: 20px 0;
+}
 .content {
     padding: 0 40px;
     h1 {

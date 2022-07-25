@@ -1,12 +1,6 @@
 <template>
   <div>
     <section class="article-list">
-      <!-- 错误信息 -->
-      <div v-if="errMsg">
-        <p>
-          {{errMsg}}
-        </p>
-      </div>
       <article style="margin-top: 50px;" class="article" 
       v-for="article in articleList" :key="article._id">
         <!-- 标题 -->
@@ -41,8 +35,8 @@
     </section>
     <!-- 底部分页 -->
     <section class="list-page" v-if="this.$route.path == '/search'">
-    <a class="next" :href="nextUrl" @click="nextPage" v-show="next">下一页<i class="iconfont icon-right"></i></a>
-    <a class="prev" :href="preUrl" @click="prePage" v-show="pre"><i class="iconfont icon-left"></i>上一页</a>
+      <a href="javascript:void(0);" class="next" @click.stop="nextPage" v-show="next">下一页<i class="iconfont icon-right"></i></a>
+      <a href="javascript:void(0);" class="prev" @click.stop="prePage" v-show="pre"><i class="iconfont icon-left"></i>上一页</a>
       <div class="clear"></div>
     </section>
   </div>
@@ -68,14 +62,19 @@ export default {
           path: "/article?id="+id
         })
       },
+      toPage(page) {
+        this.$router.push({
+          path: `/search?keyword=${this.$route.query.keyword}&page=${page}`
+        })
+      },
       // 加载数据
       dataLoad() {
         const page = this.$route.query.page?this.$route.query.page:1
         var keyword = this.$route.query.keyword?this.$route.query.keyword:''
         var skip = 5*(parseInt(page)-1)
         getBlogList({limit: 6, skip, keyword}).then(result=>{
-          var next = this.next
-          var pre = this.pre
+          var next = localStorage.getItem('nextSearch')
+          var pre = localStorage.getItem('preSearch')
           var page = parseInt(this.$route.query.page)
           this.articleList = result = result.data
           // 无下一页
@@ -105,6 +104,8 @@ export default {
           }
           this.next = next
           this.pre = pre
+          localStorage.setItem('nextSearch', this.next)
+          localStorage.setItem('preSearch', this.pre)
         }).catch(err=>{
           this.errMsg = err
           this.loopLoadDataTimer = setTimeout(() => {
@@ -127,20 +128,12 @@ export default {
         })
       },
       nextPage() {
-        this.dataLoad(5*(parseInt(page)-1))
+        const page = this.$route.query.page?this.$route.query.page:1
+        this.toPage(parseInt(page)+1)
       },
       prePage() {
-        this.dataLoad(-(5*(parseInt(page)-1)))
-      }
-    },
-    computed: {
-      nextUrl() {
-        var page = this.$route.query.page?parseInt(this.$route.query.page)+1:2
-        return `/search?keyword=${this.$route.query.keyword}&page=`+page
-      },
-      preUrl() {
-        var page = this.$route.query.page>=1?this.$route.query.page-1:1
-        return `/search?keyword=${this.$route.query.keyword}&page=`+page
+        const page = this.$route.query.page?this.$route.query.page:1
+        this.toPage(parseInt(page)-1)
       }
     },
     watch: {
@@ -148,8 +141,14 @@ export default {
         if(this.errMsg==='' || this.articleList.length > 1) {
           this.$bus.$emit('disLoading')
           clearTimeout(this.loopLoadDataTimer)
+          this.errMsg = ''
         }
-      }
+      },
+      '$route'(to,from){
+        this.dataLoad()
+        this.loadNext()
+        window.scrollTo(0, 0); 
+      } 
     },
     mounted() {
       this.dataLoad()

@@ -8,7 +8,7 @@ import store from '@/store/index'
 import router from '@/router'
 import { Message } from 'element-ui';
 
-axios.defaults.baseURL = 'http://192.168.31.78:8888'
+axios.defaults.baseURL = 'http://127.0.0.1:8888'
 axios.defaults.timeout = 6000
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 
@@ -44,7 +44,7 @@ axios.interceptors.response.use(
                 // 在登录成功后返回当前页面，这一步需要在登录页操作。  
                 case 400: 
                     Message({
-                        message: '数据都不见了X﹏X',
+                        message: '数据请求失败X_X',
                         type: 'error'
                     })
                     break
