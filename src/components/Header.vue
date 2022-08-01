@@ -1,7 +1,7 @@
 <template>
   <header id="headerbox">
     <!--头像头部-->
-    <div id="header" style="margin-top: 5px">
+    <div id="header">
       <nav id="headerNav">
         <!--LOGO-->
         <a :href="siteUrl">
@@ -139,7 +139,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 820px) {
   #headerbox {
     display: none;
   }
@@ -149,12 +149,12 @@ export default {
   width: 100%;
   height: 60px;
   display: flex;
+  margin-top: 0;
   align-items: center;
-  margin-top: 2em;
   transition: all 0.6s ease;
 
   a {
-    margin-left: 20px;
+    padding-left: 20px;
   }
 
   img {
@@ -171,7 +171,7 @@ export default {
 
   #top_tit {
     font-size: 1.5em;
-    margin: 10px 20px;
+    margin: 0 20px;
     border-top: 3px solid #000;
   }
 }

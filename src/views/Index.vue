@@ -1,6 +1,13 @@
 <template>
-  <section style="margin: 0; padding: 0;" class="conBox">
+  <section style="margin: 0; padding: 0;" class="conBox" ref="indexmain">
+    <!-- snow -->
     <canvas id="Snow" width="100%" height="100%"></canvas>
+
+    <!-- wind-bell -->
+    <div id="windBell">
+        <img :src="`${windBell}`" width="90px" height="100%">
+        <img :src="`${windBell2}`" width="100px" height="100%">
+    </div>
 
     <!--加载动画 -->
     <div id="loading" v-if="isLoading" class="loading">
@@ -14,12 +21,22 @@
         style="filter: url(&quot;#displacementFilter&quot;); transform: scale(1);stroke:#55e8b2;stroke-width:6;stroke-opacity:0.1" fill="#159969"></polygon>
       </svg>
     </div>
+
+    <!-- toTop -->
+    <div id="toTop" @click="toTop">
+      <span>△</span>
+    </div>
+
+    <!-- 侧边小栏 -->
+    <!-- <Navbar /> -->
+
     <Header></Header>
     
     <main>
       <div class="wrapper" id="wrapper">
         <!-- headerBar -->
-        <header :style="`background-image: url(${tit_bg})`" id="header">
+        <div class="grass" :style="`background-image: url(${tit_bg})`">
+          <header  id="header">
           <div class="description" style="float: right">
             <a :href="siteUrl" style="cursor: pointer;">
               <!-- 博客标题 -->
@@ -32,7 +49,7 @@
             <h2 class="autograph">{{siteDescription}}</h2>
 
             <!-- 导航栏 -->
-            <nav>
+            <nav class="index-navbar">
               <div class="bitcron_nav_container">
                 <ul class="site_nav" >
                   <li>
@@ -47,6 +64,7 @@
 
           </div>
         </header>
+        </div>
 
         <!-- content -->
         <main class="contents">
@@ -90,6 +108,7 @@
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 import ArticleList from "../components/ArticleList.vue";
+import Navbar from '../components/Navbar.vue'
 import { getBlogList } from '@/request/blogApi'
 import { getCategoryList, getCategoryCount } from '@/request/categoryApi'
 import anime from 'animejs'
@@ -97,7 +116,7 @@ import { snow } from '@/plugins/snow'
 
 export default {
   name: "MainIndex",
-  components: { Header, Footer, ArticleList },
+  components: { Header, Footer, ArticleList, Navbar },
   data() {
     return {
       // source
@@ -105,8 +124,10 @@ export default {
       photo: require("@/assets/img/photo.png"),
       tit_font_bg: require("@/assets/img/tit_font_bg.jpg"),
       bg: require("@/assets/img/bg.png"),
+      windBell: require("@/assets/img/windBell.png"),
+      windBell2: require("@/assets/img/windBell2.png"),
       // 主题设置
-      siteUrl: 'http://127.0.0.1:8080',
+      siteUrl: 'http://localhost:8080',
       siteTitle: '霜冷の秘密基地',
       siteDescription: '幽暗让我们向往光明',
       siteNavBar: [   // 导航栏
@@ -117,6 +138,15 @@ export default {
         {
           name: '归档',
           path: "archive",
+        },
+        {
+          name: '友链',
+          path: '/',
+        },
+        {
+          name: '时光',
+          description: '古今过往，似水流年',
+          path: '/',
         },
         {
           name: '订阅',
@@ -214,7 +244,27 @@ export default {
       // 清除缓存
       clearCache() {
         sessionStorage.clear()
+        localStorage.clear()
       },
+      // scroll anime
+      scrollAnime(scrollY) {
+        let html = document.documentElement
+        anime({
+          targets: html,
+          scrollTop: scrollY,
+          duration: 500,
+          easing: 'easeInOutQuad'
+        })
+      },
+      toTop(e) {
+        document.documentElement.scrollIntoView({
+            block: 'start',
+            behavior: 'smooth',
+        })
+        if (document.documentElement.scrollTop > 10) {
+          document.getElementById('toTop').classList.add('sm-hide')
+        }
+      }
     },
     watch: {
       // 加载数据后，解除loding状态
@@ -226,6 +276,12 @@ export default {
           this.errMsg===''
         }
       },
+      '$route'(to, from) {
+        let scrollY = document.documentElement.scrollTop
+        if( scrollY > 100) this.scrollAnime(1)
+        this.$bus.$emit('onLoadComment')
+      },
+
     },
     mounted(){
       const asideArtList = JSON.parse(sessionStorage.getItem('asideArtList'))
@@ -246,6 +302,13 @@ export default {
           this.clearCache();
       });
 
+      // 监听鼠标滚轮事件
+      window.addEventListener('mousewheel', (e)=>{
+        const toTop = document.getElementById('toTop')
+        if(document.documentElement.scrollTop < 20) toTop.classList.add('sm-hide')
+        else toTop.classList.remove('sm-hide')
+      })
+
       // 插件开关
       snow(true)
       this.loading()
@@ -255,14 +318,17 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@media screen and (max-width: 700px) {
+
+@media screen and (max-width: 820px) {
   #wrapper {
     margin-top: 0 !important;
+    box-shadow: none !important;
   }
   .sidebar ul {
     flex-direction: column;
     margin-left: 0!important;
   }
+  
 }
 @media screen and (max-width: 550px) {
   #header {
@@ -272,7 +338,36 @@ export default {
     padding: 30pt 5%;
     transition: all 0.6s ease;
   }
+  .description {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .index-navbar  {
+    margin-top: 1.25em !important;
+  }
   
+}
+
+// 回到顶部
+#toTop {
+  height: 35px;
+  width: 35px;
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background: #fff;
+  box-shadow: 0 10px 20px 0 hsl(289deg 7% 84%);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  cursor: pointer;
+  span {
+    color: #ccc;
+  }
 }
 
 a {
@@ -288,14 +383,21 @@ a {
     background: rgba(194,199,199,0.1);
     pointer-events: none;
 }
+#windBell {
+    position: absolute;
+    right: 0;
+    transform: translateY(-15px);
+    display: flex;
+}
 #wrapper {
   max-width: 820px;
   background: #fff;
   margin: 0 auto;
   margin-top: 60px;
-  box-shadow: 0 10px 20px 0 hsl(0deg 0% 93% / 86%);
+  box-shadow: 5px 7px 10px rgb(237, 237, 237);
   -webkit-transition: all 0.6s ease;
   transition: all 0.6s ease;
+
 
   // 标题信息
   header {
@@ -304,7 +406,13 @@ a {
     padding-left: 5%;
     padding-right: 5%;
     padding-top: 75pt;
+    // 背景虚化
+    // backdrop-filter: blur(2px);
+    // background-color: rgba(255,255,255,.1);
+
+    // 图片铺满
     // background-size: cover;
+    // background-position: center;
 
     // 标题
     h1 {
@@ -346,7 +454,7 @@ a {
     // 个性标签
     h2 {
       font-size: .8em;
-      color: #bbb;
+      color: white;
       font-weight: 400;
       margin: 0em 0 0.8em;
       float: right;
@@ -355,7 +463,7 @@ a {
     }
 
     // 导航栏
-    nav {
+    .index-navbar {
       width: 100%;
       margin-top: 3.5em;
       text-align: right;
@@ -367,7 +475,7 @@ a {
       display: inline-block;
       list-style-type: none;
       list-style: square;
-      color: #bbb;
+      a {color: #fff;}
 
       // 单个导航
       li {
@@ -378,7 +486,6 @@ a {
           width: auto;
           display: block;
           padding: 0.5em 0.8em;
-          color: rgb(201, 201, 201);
           line-height: 2em;
           border-top: 2px solid #555;
           transition: .5s;
@@ -395,7 +502,7 @@ a {
 }
 
 .aside {
-  overflow: auto;
+  height: 160px;
   padding-top: 20px;
   max-width: 680px;
   margin: 0 auto;
@@ -445,7 +552,6 @@ a {
   
 }
 
-// loading
 #loading {
     position: fixed !important;
     position: absolute;

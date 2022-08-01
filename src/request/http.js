@@ -3,14 +3,14 @@
  */
 
 import axios from 'axios'
-import QS from 'qs'
 import store from '@/store/index'
 import router from '@/router'
 import { Message } from 'element-ui';
 
 axios.defaults.baseURL = 'http://127.0.0.1:8888'
 axios.defaults.timeout = 6000
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+axios.defaults.headers.post['Content-Type'] = 'application/json';
+// Content-Type: application/x-www-form-urlencoded
 
 // 请求拦截守卫
 axios.interceptors.request.use(
@@ -105,7 +105,7 @@ axios.interceptors.response.use(
  export function get(url, params){    
     return new Promise((resolve, reject) =>{        
         axios.get(url, {            
-            params: params        
+            params        
         }).then(res => {
             resolve(res.data);
         }).catch(() =>{
@@ -118,9 +118,9 @@ axios.interceptors.response.use(
  * @param {String} url [请求的url地址] 
  * @param {Object} params [请求时携带的参数] 
  */
- export function post(url, params) {
+ export function post(url, data, timeout) {
     return new Promise((resolve, reject) => {
-         axios.post(url, QS.stringify(params))
+         axios.post(url, data, timeout||3000)
         .then(res => {
             resolve(res.data);
         })

@@ -1,0 +1,12 @@
+
+
+/* 功能样式 */
+.sm-hide {
+    display: none !important;
+}
+
+/* 主题色 */
+body {
+    --sm-smilesl-bgcolor: CornflowerBlue ;
+    --sm-smilesl-color: AliceBlue;
+}

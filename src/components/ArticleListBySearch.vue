@@ -18,17 +18,17 @@
         <div class="meta">
           <span class="item">
             <i class="iconfont icon-calendar"></i>
-            <time :datetime="article.createAt"> {{article.createAt}}</time>
+            <time :datetime="article.createAt"> {{article.createAt.slice(0, 10)}}</time>
           </span>
           <span class="item">
             <i class="iconfont icon-tag"></i>
-            <a href="#" v-for="item in article.category" :key="item._id">
+            <a href="javascript: void(0)" @click="toCategory(article.cid)" v-for="item in article.category" :key="item._id">
               {{item.title}}
             </a>
           </span>
           <span class="item">
             <i class="iconfont icon-message "></i>
-            <a href="#"> {{article.comments?article.comments:0}} 评</a>
+            <a href="javascript: void(0)" @click="toRouter(article._id, true)"> {{article.comments?article.comments:0}} 评</a>
           </span>
         </div>
       </article>
@@ -44,6 +44,7 @@
 
 <script>
 import { getBlogList } from '@/request/blogApi'
+import { getCommnetCount } from '@/request/commentApi'
 
 export default {
     name: 'ArticleList',
@@ -61,6 +62,20 @@ export default {
         this.$router.push({
           path: "/article?id="+id
         })
+        if(toCommentPosition) {
+          setTimeout(() => {
+            document.getElementsByClassName('adminui')[0].scrollIntoView({
+              block: 'start',
+              behavior: 'smooth'
+            })
+          }, 200);
+        }
+      },
+      // 前往分类
+      toCategory(cid) {
+        this.$router.push({
+          path: `/category/${cid}`
+        })
       },
       toPage(page) {
         this.$router.push({
@@ -73,8 +88,8 @@ export default {
         var keyword = this.$route.query.keyword?this.$route.query.keyword:''
         var skip = 5*(parseInt(page)-1)
         getBlogList({limit: 6, skip, keyword}).then(result=>{
-          var next = localStorage.getItem('nextSearch')
-          var pre = localStorage.getItem('preSearch')
+          var next = sessionStorage.getItem('nextSearch')
+          var pre = sessionStorage.getItem('preSearch')
           var page = parseInt(this.$route.query.page)
           this.articleList = result = result.data
           // 无下一页
@@ -97,15 +112,22 @@ export default {
             else if(page>1) {
               this.loadNext(skip+5)
               // 判断下一页有数据则可点击下一页
-              if (JSON.parse(localStorage.getItem('tempSearchArticleList')).length > 0) next = true
+              if (JSON.parse(sessionStorage.getItem('tempSearchArticleList')).length > 0) next = true
               else next = false
               pre = true
             }
           }
           this.next = next
           this.pre = pre
-          localStorage.setItem('nextSearch', this.next)
-          localStorage.setItem('preSearch', this.pre)
+          sessionStorage.setItem('nextSearch', this.next)
+          sessionStorage.setItem('preSearch', this.pre)
+
+          // 获取评论数量
+          this.articleList.forEach(i => {
+            getCommnetCount({aid: i._id}).then(result=>{
+              this.$set(i, 'comments', result.data)
+            })
+          });
         }).catch(err=>{
           this.errMsg = err
           this.loopLoadDataTimer = setTimeout(() => {
@@ -121,7 +143,7 @@ export default {
         var skip = 5*(parseInt(page)-1)
         // 请求6条数据
         getBlogList({limit: 6, skip, keyword}).then(result=>{
-          localStorage.setItem('tempSearchArticleList', JSON.stringify(result.data))
+          sessionStorage.setItem('tempSearchArticleList', JSON.stringify(result.data))
         }).catch(err=>{
           // 请求错误
           this.errMsg = err

@@ -15,14 +15,7 @@ export default {
   margin: 0;
   padding: 0;
 }
-#app {
-  width: 100%;
-  height: 100%;
-}
 body {
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
     color: #333;
     background: #f7f7f7;
     font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
@@ -34,5 +27,23 @@ body {
     text-align: justify;
     word-wrap: break-word;
     background-attachment: fixed;
+}
+/* 滚动条整体 */
+::-webkit-scrollbar {
+	width: 6px;
+}
+/* scroll轨道背景 */
+::-webkit-scrollbar-track{ 
+	background: transparent;
+}
+/* 滚动滑块 */
+::-webkit-scrollbar-thumb {
+	background: #c8c8c8;
+	border-radius: 3px;
+}
+@media screen and (max-width: 820px) {
+  ::-webkit-scrollbar {
+    width: 0;
+  }
 }
 </style>

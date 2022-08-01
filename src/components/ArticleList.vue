@@ -1,12 +1,13 @@
 <template>
   <div>
     <section class="article-list">
-      <el-skeleton :rows="3" animated v-if="errMsg !== ''" class="skeleton"/>
+      <el-skeleton :rows="4" animated v-if="errMsg !== ''" class="skeleton"/>
+      <el-skeleton :rows="5" animated v-if="errMsg !== ''" class="skeleton"/>
       <article style="margin-top: 50px;" class="article" 
       v-for="(article, index) in articleList" :key="index">
         <!-- 标题 -->
         <h2 style="margin: 1em 0">
-          <a @click="toRouter(article._id)" 
+          <a href="javascript:void(0)" @click="toRouter(article._id)" 
           class="article_title">{{article.title}}</a>
           <span class="hot">{{article.hot}}度</span>
         </h2>
@@ -20,17 +21,17 @@
         <div class="meta">
           <span class="item">
             <i class="iconfont icon-calendar"></i>
-            <time :datetime="article.createAt"> {{article.createAt}}</time>
+            <time :datetime="article.createAt"> {{article.createAt.slice(0, 10)}}</time>
           </span>
           <span class="item">
             <i class="iconfont icon-tag"></i>
-            <a href="#" v-for="item in article.category" :key="item._id">
+            <a href="javascript: void(0)" @click="toCategory(article.cid)" v-for="item in article.category" :key="item._id">
               {{item.title}}
             </a>
           </span>
           <span class="item">
             <i class="iconfont icon-message "></i>
-            <a href="#"> {{article.comments?article.comments:0}} 评</a>
+            <a href="javascript: void(0)" @click="toRouter(article._id, true)" > {{article.comments?article.comments:0}} 评</a>
           </span>
         </div>
       </article>
@@ -46,6 +47,8 @@
 
 <script>
 import { getBlogList } from '@/request/blogApi'
+import { getCommnetCount } from '@/request/commentApi'
+import anime from 'animejs'
 
 export default {
     name: 'ArticleList',
@@ -60,9 +63,23 @@ export default {
       }
     },
     methods: {
-      toRouter(id){
+      toRouter(id, toCommentPosition){
         this.$router.push({
           path: "/article?id="+id
+        })
+        if(toCommentPosition) {
+          setTimeout(() => {
+            document.getElementsByClassName('adminui')[0].scrollIntoView({
+              block: 'start',
+              behavior: 'smooth'
+            })
+          }, 200);
+        }
+      },
+      // 前往分类
+      toCategory(cid) {
+        this.$router.push({
+          path: `/category/${cid}`
         })
       },
       toPage(page) {
@@ -111,12 +128,20 @@ export default {
           this.pre = pre
           sessionStorage.setItem('next', this.next)
           sessionStorage.setItem('pre', this.pre)
+
+          // 获取评论数量
+          this.articleList.forEach(i => {
+            getCommnetCount({aid: i._id}).then(result=>{
+              this.$set(i, 'comments', result.data)
+            })
+          });
         }).catch(err=>{
           this.errMsg = err
           this.loopLoadDataTimer = setTimeout(() => {
             if (this.errMsg!=='') this.dataLoad()
           }, 3000);
         })
+
       },
 
       // 加载下一次的数据
@@ -138,6 +163,20 @@ export default {
       prePage() {
         const page = this.$route.query.page?this.$route.query.page:1
         this.toPage(parseInt(page)-1)
+      },
+      articleBarIn() {
+        const a = new anime({
+          targets: '.article',
+          translateX: 0,
+          delay: anime.stagger(200)
+        })
+
+        const b = new anime({
+          targets: '.article',
+          translateX: 20,
+          delay: anime.stagger(200)
+        })
+
       }
     },
     watch: {
@@ -146,7 +185,11 @@ export default {
           this.$bus.$emit('disLoading')
           clearTimeout(this.loopLoadDataTimer)
           this.errMsg = ''
+          setTimeout(() => {
+            this.articleBarIn()
+          }, 100);
         }
+        
       },
       '$route'(to,from){
         if(from.name == 'index') {
@@ -165,12 +208,16 @@ export default {
         this.dataLoad()
         this.loadNext()
       } 
-      else this.articleList = artList // 存在从本地加载数据
+      else {
+        this.articleList = artList // 存在从本地加载数据
+      }
 
       if(next && pre) {
         this.next = next==='true'?true:false
         this.pre = pre==='true'?true:false
       }
+
+
     }
 }
 </script>
