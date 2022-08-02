@@ -41,15 +41,6 @@ const router = new VueRouter({
                     }
                 },
                 {
-                    path: 'search',
-                    components: {
-                        index_view:()=>import('@/components/ArticleListBySearch.vue')
-                    },
-                    meta: {
-                        title: `搜索 - ${site_title}`
-                    }
-                },
-                {
                     path: 'archive',
                     name: 'archive',
                     components: {
@@ -66,6 +57,13 @@ const router = new VueRouter({
                         title: `关于 - ${site_title}`
                     }
                 },
+                {
+                    path: 'page',
+                    name: 'page',
+                    components: {
+                        index_view:()=>import('@/components/TemplatePage.vue')
+                    },
+                },
             ]
         },
         {
@@ -77,11 +75,6 @@ const router = new VueRouter({
             name: '404',
             component: ()=>import('@/views/404.vue')
         },
-        {
-            name: "refresh",
-            path: `/refresh`,
-            component: () => import('@/components/Refresh.vue')    
-        }
         
     ]
 })

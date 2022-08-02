@@ -705,6 +705,11 @@ export default {
             } 
         }
     },
+    watch: {
+        "$route"(to, from) {
+            this.onLoadComent()
+        },
+    },
     mounted() {
         const art = JSON.parse(sessionStorage.getItem(`art_${this.$route.query.id}`))
         this.browserInfo = JSON.parse(sessionStorage.getItem('browerinfo'))

@@ -50,5 +50,14 @@ export const getPreById = (params) => {
     return get('api/blog/next', params)
 }
 
+/**
+ * 查询文章总数
+ * @param {*} params {keyword: 关键词}
+ * @returns 
+ */
+export const getArticleCount = (params) => {
+    return get('api/blog/count', params)
+}
+
 
 

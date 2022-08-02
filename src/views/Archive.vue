@@ -64,6 +64,11 @@ export default {
         return sorted;
         },
         onLoad() {
+            const artGroup = JSON.parse(sessionStorage.getItem('artGroup'))
+        
+            if(artGroup != null) {
+                return this.archive_Group = artGroup // 存在从本地加载数据
+            }
             // 获取指定分类文章
             getBlogList({all: 1, small: 1}).then(result=>{
                 let data = result.data
@@ -95,10 +100,7 @@ export default {
         }
     },
     mounted() {
-        const artGroup = JSON.parse(sessionStorage.getItem('artGroup'))
-        
-        if(!artGroup || artGroup.length == 0) this.onLoad() // 不存在加载数据
-        else this.archive_Group = artGroup // 存在从本地加载数据
+        this.onLoad()
     }
 }
 </script>

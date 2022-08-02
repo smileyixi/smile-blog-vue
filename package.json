@@ -15,6 +15,7 @@
     "js-cookie": "^3.0.1",
     "less": "^4.1.2",
     "less-loader": "^6.2.0",
+    "mavon-editor": "^2.10.4",
     "path": "^0.12.7",
     "querystring": "^0.2.1",
     "sass-loader": "^13.0.2",

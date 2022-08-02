@@ -3,12 +3,6 @@
     <!-- snow -->
     <canvas id="Snow" width="100%" height="100%"></canvas>
 
-    <!-- wind-bell -->
-    <div id="windBell">
-        <img :src="`${windBell}`" width="90px" height="100%">
-        <img :src="`${windBell2}`" width="100px" height="100%">
-    </div>
-
     <!--加载动画 -->
     <div id="loading" v-if="isLoading" class="loading">
       <div class="blur"></div>
@@ -124,8 +118,6 @@ export default {
       photo: require("@/assets/img/photo.png"),
       tit_font_bg: require("@/assets/img/tit_font_bg.jpg"),
       bg: require("@/assets/img/bg.png"),
-      windBell: require("@/assets/img/windBell.png"),
-      windBell2: require("@/assets/img/windBell2.png"),
       // 主题设置
       siteUrl: 'http://localhost:8080',
       siteTitle: '霜冷の秘密基地',
@@ -146,11 +138,11 @@ export default {
         {
           name: '时光',
           description: '古今过往，似水流年',
-          path: '/',
+          path: 'page',
         },
         {
           name: '订阅',
-          path: '/',
+          path: 'page',
         }
         
       ],
@@ -185,34 +177,46 @@ export default {
         // }
       },
       // 加载聚合列表
-      loadData() {
-        // 随机文章
-        for(let i = 0; i < 5; i++) {
-            getBlogList({limit: 5, random: 'true', small: 'true'}).then(result=>{
-              this.errMsg = ''
-              this.asideArticleList.push(result.data)
-              
-              if (i==4) sessionStorage.setItem('asideArtList', JSON.stringify(this.asideArticleList))
+      loadAsideData() {
+        const asideArtList = JSON.parse(sessionStorage.getItem('asideArtList'))
+        const asideCateList = JSON.parse(sessionStorage.getItem('asideCateList'))
+      
+        if(asideArtList != null) {
+          this.asideArticleList = asideArtList
+        } else {
+          // 随机文章
+          for(let i = 0; i < 5; i++) {
+              getBlogList({limit: 5, random: 'true', small: 'true'}).then(result=>{
+                this.errMsg = ''
+                this.asideArticleList.push(result.data)
+                
+                if (i==4) sessionStorage.setItem('asideArtList', JSON.stringify(this.asideArticleList))
 
-            }).catch(err=>{
-              this.errMsg = err
-            })
+              }).catch(err=>{
+                this.errMsg = err
+              })
+          }
         }
 
-        // 分门别类
-        getCategoryList({}).then(result=>{
-          this.asideCategoryList = result.data
-          this.asideCategoryList.forEach(asideCate => {
-            // 获取分类数量
-            getCategoryCount({cid: asideCate._id}).then(result=>{
-              asideCate.count = result.data?result.data:0
-            }).catch(err=>{
-              this.errMsg = err
-            })
-            sessionStorage.setItem('asideCateList', JSON.stringify(this.asideCategoryList))
-          });
-        })
+        if (asideCateList != null) {
+          this.asideCategoryList = asideCateList
+        } else {
+          // 分门别类
+          getCategoryList({}).then(result=>{
+            this.asideCategoryList = result.data
+            this.asideCategoryList.forEach(asideCate => {
+              // 获取分类数量
+              getCategoryCount({cid: asideCate._id}).then(result=>{
+                asideCate.count = result.data?result.data:0
+              }).catch(err=>{
+                this.errMsg = err
+              })
+              sessionStorage.setItem('asideCateList', JSON.stringify(this.asideCategoryList))
+            });
+          })
+        }
         
+ 
       },
       // 加载动画
       loading() {
@@ -246,16 +250,6 @@ export default {
         sessionStorage.clear()
         localStorage.clear()
       },
-      // scroll anime
-      scrollAnime(scrollY) {
-        let html = document.documentElement
-        anime({
-          targets: html,
-          scrollTop: scrollY,
-          duration: 500,
-          easing: 'easeInOutQuad'
-        })
-      },
       toTop(e) {
         document.documentElement.scrollIntoView({
             block: 'start',
@@ -271,36 +265,16 @@ export default {
       asideArticleList() {
         if(this.errMsg==='' && this.asideArticleList.length < 1) {
           this.disLoading()
-          this.loadData()
+          this.loadAsideData()
         }else {
           this.errMsg===''
         }
       },
-      '$route'(to, from) {
-        let scrollY = document.documentElement.scrollTop
-        if( scrollY > 100) this.scrollAnime(1)
-        this.$bus.$emit('onLoadComment')
-      },
 
     },
     mounted(){
-      const asideArtList = JSON.parse(sessionStorage.getItem('asideArtList'))
-      const asideCateList = JSON.parse(sessionStorage.getItem('asideCateList'))
-      
-      // 本地不存在加载
-      if((!asideArtList || asideArtList.length<1) || (!asideCateList || asideCateList.length<1)) {
-        this.loadData()
-      }
-      else { // 存在从本地加载数据
-        this.asideArticleList = asideArtList
-        this.asideCategoryList = asideCateList
-      } 
+      this.loadAsideData()
       this.$bus.$on('disLoading', this.disLoading)
-
-      // 监听刷新事件,刷新缓存
-       window.addEventListener("beforeunload", e => {
-          this.clearCache();
-      });
 
       // 监听鼠标滚轮事件
       window.addEventListener('mousewheel', (e)=>{
@@ -383,14 +357,10 @@ a {
     background: rgba(194,199,199,0.1);
     pointer-events: none;
 }
-#windBell {
-    position: absolute;
-    right: 0;
-    transform: translateY(-15px);
-    display: flex;
-}
+
 #wrapper {
   max-width: 820px;
+  min-height: 800px;
   background: #fff;
   margin: 0 auto;
   margin-top: 60px;

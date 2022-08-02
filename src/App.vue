@@ -6,7 +6,7 @@
 
 <script>
 export default {
-    name: 'App'
+    name: 'App',
 }
 </script>
 
@@ -28,19 +28,22 @@ body {
     word-wrap: break-word;
     background-attachment: fixed;
 }
+
 /* 滚动条整体 */
 ::-webkit-scrollbar {
-	width: 6px;
+	width: 0px;
 }
 /* scroll轨道背景 */
 ::-webkit-scrollbar-track{ 
-	background: transparent;
+	/* background: #fff; */
 }
 /* 滚动滑块 */
 ::-webkit-scrollbar-thumb {
 	background: #c8c8c8;
-	border-radius: 3px;
+	/* border-radius: 3px; */
+  height: 100px;
 }
+
 @media screen and (max-width: 820px) {
   ::-webkit-scrollbar {
     width: 0;

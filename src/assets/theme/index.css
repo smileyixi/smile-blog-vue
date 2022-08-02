@@ -1,12 +1,53 @@
+/* colors */
+body {
+
+    /* 主题色 */
+    --sm-main-color: white;
+    --sm-smilesl-color: AliceBlue;
+    --sm-smilesl-bgcolor: CornflowerBlue ;
+
+    /* smilesl player */
+    --player-color: white;
+    --player-fontsize: 12px;
+    --player-lrc-fontsize: 12px;
+    --player-vicelrc-fontsize: 9px;    /* 副歌词大小 */
+    --player-vicelrc-color: rgb(221, 220, 220);       /* 副歌词色彩 */
+
+    /* progress */
+    --progress-color: rgb(67, 109, 234);
+
+    /* check button */
+    --check-bgcolor: rgb(161, 161, 161);
+    --check-selected-bgcolor: rgb(79, 79, 79);
+    --check-border: 2px solid rgb(66, 66, 66);
+    --check-radioCircle: rgb(66, 66, 66);
+}
 
 
 /* 功能样式 */
 .sm-hide {
     display: none !important;
 }
-
-/* 主题色 */
-body {
-    --sm-smilesl-bgcolor: CornflowerBlue ;
-    --sm-smilesl-color: AliceBlue;
+/* 分页样式 */
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+    color: #FFF;
+    background-color: var(--sm-smilesl-bgcolor) !important;
 }
+
+/* 字体 */
+.font-size-Primary {
+    font-size: 16px;
+}
+.font-size-Regular {
+    font-size: 14px;
+}
+
+
+/* 头部 */
+.navgitionBar {
+    color: var(--sm-main-color);
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    /* box-shadow: 1px 1px 3px rgb(82, 82, 82); */
+}
+

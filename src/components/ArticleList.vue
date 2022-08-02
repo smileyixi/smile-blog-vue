@@ -37,16 +37,20 @@
       </article>
     </section>
     <!-- 底部分页 -->
-    <section class="list-page" v-if="this.$route.path == '/'">
-      <a href="javascript:void(0);" class="next" @click.stop="nextPage" v-show="next">下一页<i class="iconfont icon-right"></i></a>
-      <a href="javascript:void(0);" class="prev" @click.stop="prePage" v-show="pre"><i class="iconfont icon-left"></i>上一页</a>
-      <div class="clear"></div>
+    <section class="list-page">
+      <el-pagination class="list-page-2"
+        background
+        layout="prev, pager, next"
+        :page-size="6"
+        :total="total"
+        :current-page.sync="pageNum">
+      </el-pagination>
     </section>
   </div>
 </template>
 
 <script>
-import { getBlogList } from '@/request/blogApi'
+import { getBlogList, getArticleCount } from '@/request/blogApi'
 import { getCommnetCount } from '@/request/commentApi'
 import anime from 'animejs'
 
@@ -59,7 +63,9 @@ export default {
         errMsg: '',
         next: false,
         pre: false,
-        loopLoadDataTimer: ''
+        loopLoadDataTimer: '',
+        pageNum: parseInt(this.$route.query.page||1),
+        total: 0
       }
     },
     methods: {
@@ -82,52 +88,22 @@ export default {
           path: `/category/${cid}`
         })
       },
-      toPage(page) {
-        this.$router.push({
-          path: "/?page=" + page
-        })
-      },
       // 加载数据
-      dataLoad() {
-        const page = this.$route.query.page?this.$route.query.page:1
-        var skip = 5*(parseInt(page)-1)
+      dataLoad(pageNum) {
+        let page = this.$route.query.page?this.$route.query.page:1
+        if (pageNum) page = pageNum
+        var skip = 6*(parseInt(page)-1)
+        const tempArtList =JSON.parse(sessionStorage.getItem(`articleList_${page}`))
+
+        if (tempArtList != null) {
+          // 判断最后一页是否更新的文章
+          return this.articleList=tempArtList
+        }
+
         getBlogList({limit: 6, skip}).then(result=>{
-          var next = sessionStorage.getItem('next')
-          var pre = sessionStorage.getItem('pre')
-          var page = parseInt(this.$route.query.page)
           this.articleList = result = result.data
-          sessionStorage.setItem('artList', JSON.stringify(this.articleList) )
           
-          // 无下一页
-          if (result.length <= 5) {
-            this.errMsg = ''
-            next = pre = false
-            if(page > 1) {
-              pre = true
-            }
-          }
-          // 有下一页
-          else if (result.length > 5) {
-            this.articleList = result.slice(0,5)
-            // 主页
-            if (!page || page==1) {
-              next = true
-              pre = false
-            }
-            // 不是第一页
-            else if(page>1) {
-              const isNext = JSON.parse(sessionStorage.gJSetItem(`tempArticleList_${page}`))
-              if (!isNext) this.loadNext(skip+5)
-              // 判断下一页有数据则可点击下一页
-              if (isNex.length > 1) next = true
-              else next = false
-              pre = true
-            }
-          }
-          this.next = next
-          this.pre = pre
-          sessionStorage.setItem('next', this.next)
-          sessionStorage.setItem('pre', this.pre)
+          sessionStorage.setItem(`articleList_${page}`, JSON.stringify(this.articleList) )
 
           // 获取评论数量
           this.articleList.forEach(i => {
@@ -143,31 +119,10 @@ export default {
         })
 
       },
-
-      // 加载下一次的数据
-      loadNext() {
-        const page = this.$route.query.page?this.$route.query.page:1
-        var skip = 5*(parseInt(page)-1)
-        // 请求6条数据
-        getBlogList({limit: 6, skip}).then(result=>{
-          sessionStorage.setItem(`tempArticleList_${page}`, JSON.stringify(result.data))
-        }).catch(err=>{
-          // 请求错误
-          this.errMsg = err
-        })
-      },
-      nextPage() {
-        const page = this.$route.query.page?this.$route.query.page:1
-        this.toPage(parseInt(page)+1)
-      },
-      prePage() {
-        const page = this.$route.query.page?this.$route.query.page:1
-        this.toPage(parseInt(page)-1)
-      },
       articleBarIn() {
         const a = new anime({
           targets: '.article',
-          translateX: 0,
+          width: 900,
           delay: anime.stagger(200)
         })
 
@@ -177,7 +132,13 @@ export default {
           delay: anime.stagger(200)
         })
 
-      }
+      },
+      // 加载文章总数
+      artCount() {
+        getArticleCount({}).then(count=>{
+          this.total = parseInt(count)
+        })
+      },
     },
     watch: {
       articleList() {
@@ -185,39 +146,23 @@ export default {
           this.$bus.$emit('disLoading')
           clearTimeout(this.loopLoadDataTimer)
           this.errMsg = ''
-          setTimeout(() => {
-            this.articleBarIn()
-          }, 100);
         }
         
       },
-      '$route'(to,from){
-        if(from.name == 'index') {
-          this.dataLoad()
-          this.loadNext()
+      // 当前页发生变化时加载文章
+      pageNum(newPage, oldPage) {
+        if(newPage != oldPage) {
+          this.dataLoad(newPage)
+          document.documentElement.scrollIntoView({
+                block: 'start',
+                behavior: 'smooth',
+          })
         }
-      } 
+      }
     },
     mounted() {
-      const artList = JSON.parse(sessionStorage.getItem('artList'))
-      const next = sessionStorage.getItem('next')
-      const pre = sessionStorage.getItem('pre')
-      
-      // 不存在加载数据
-      if(!artList || artList.length == 0) {
-        this.dataLoad()
-        this.loadNext()
-      } 
-      else {
-        this.articleList = artList // 存在从本地加载数据
-      }
-
-      if(next && pre) {
-        this.next = next==='true'?true:false
-        this.pre = pre==='true'?true:false
-      }
-
-
+      this.dataLoad()
+      this.artCount()
     }
 }
 </script>
@@ -233,6 +178,7 @@ a {
 .article-list {
   padding: 0 20px;
   margin: 0 30px;
+  overflow: hidden;
 
   // 文章标题
   .article_title {
@@ -302,6 +248,12 @@ a {
   }
   .next {float: right;}
   .prev {float: left;}
+}
+
+.list-page-2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 
