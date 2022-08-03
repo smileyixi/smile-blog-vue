@@ -1,27 +1,5 @@
-/* colors */
-body {
-
-    /* 主题色 */
-    --sm-main-color: white;
-    --sm-smilesl-color: AliceBlue;
-    --sm-smilesl-bgcolor: CornflowerBlue ;
-
-    /* smilesl player */
-    --player-color: white;
-    --player-fontsize: 12px;
-    --player-lrc-fontsize: 12px;
-    --player-vicelrc-fontsize: 9px;    /* 副歌词大小 */
-    --player-vicelrc-color: rgb(221, 220, 220);       /* 副歌词色彩 */
-
-    /* progress */
-    --progress-color: rgb(67, 109, 234);
-
-    /* check button */
-    --check-bgcolor: transparency;
-    --check-selected-bgcolor: rgb(79, 79, 79);
-    --check-border: 2px solid rgb(66, 66, 66);
-    --check-radioCircle: rgb(66, 66, 66);
-}
+/* theme */
+@import './dark.css';
 
 
 /* 功能样式 */

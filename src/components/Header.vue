@@ -53,9 +53,11 @@
 
         <!-- 音乐盒子 -->
         <div class="playerBox" style="position: relative">
+          <!-- 歌曲图片 -->
           <div class="player-pic">
             <img src="@/assets/img/photo.png"/>
           </div>
+          <!-- 歌曲信息 -->
           <div class="player-info">
             <div class="player-music">
               <span>最伟大的作品 - 周杰伦</span>
@@ -121,7 +123,7 @@ export default {
       mainKey: '',      // 搜索主键
       searchKeyword: '',// 关键词
       opensearchLrc: false,  // 开lrc，关search
-      playState: false,      // 音乐播放状态
+      playState: false,      // 音乐播放状态,默认关闭状态
 
       windBell: require("@/assets/img/windBell.png"),
       windBell2: require("@/assets/img/windBell2.png"),
@@ -223,11 +225,24 @@ export default {
     // 暂停 / 播放
     clickPlay() {
       this.playState = !this.playState
+
+      // 如果开始播放
+      if (this.playState) {
+        const player_pic = anime({
+          targets: '.player-pic',
+          rotateZ: 360,
+          loop: true,
+          duration: 3500,
+          easing: 'linear'
+        })
+      }
     }
+  },
+  created() {
+    // this.detectOS()
   },
   mounted() {
     // this.keyDown()
-    this.detectOS()
     this.consoleGura()
   }
 };
@@ -253,7 +268,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 9999;
+  z-index: 1;
   transition: all 0.6s ease;
 
   // 左边栏
@@ -277,7 +292,9 @@ export default {
         border-radius: 15px;
         border: none;
         outline: none;
-        background: var(--sm-main-color);
+        background: var(--sm-search-bgcolor);
+        color: var(--sm-search-color);
+        transition: .3s;
       }
 
       /deep/ i {

@@ -9,7 +9,7 @@ export default Vue.prototype.$func = {
      */
     scrollInto: (position, els) => {
         const el = els || document.documentElement
-       el.scrollIntoView({
+        el.scrollIntoView({
             block: position ||'start',
             behavior: 'smooth',
         })

@@ -28,33 +28,33 @@
           <!-- headerBar -->
           <div class="grass" :style="`background-image: url(${tit_bg})`">
             <header  id="header">
-            <div class="description" style="float: right">
-              <a :href="siteUrl" style="cursor: pointer;">
-                <!-- 博客标题 -->
-                <h1 class="effect_1" :style="`background-image: url(${tit_font_bg})`" >
-                  {{siteTitle}}
-                </h1>
-              </a>
-              
-              <!-- 个性标签 -->
-              <h2 class="autograph">{{siteDescription}}</h2>
+              <div class="description" style="float: right">
+                <a :href="siteUrl" style="cursor: pointer;">
+                  <!-- 博客标题 -->
+                  <h1 class="effect_1" :style="`background-image: url(${tit_font_bg})`" >
+                    {{siteTitle}}
+                  </h1>
+                </a>
+                
+                <!-- 个性标签 -->
+                <h2 class="autograph">{{siteDescription}}</h2>
 
-              <!-- 导航栏 -->
-              <nav class="index-navbar">
-                <div class="bitcron_nav_container">
-                  <ul class="site_nav" >
-                    <li>
-                      <a :href="siteUrl" @click="clearCache" style="cursor: pointer;user-select: none;">首页</a>
-                    </li>
-                    <li v-for="(item, index) in siteNavBar" :key="index">
-                      <a href="javascript:void(0);" @click.stop="toPages(item.path)" style="cursor: pointer;user-select: none;">{{item.name}}</a>
-                    </li>
-                  </ul>
-                </div>
-              </nav>
+                <!-- 导航栏 -->
+                <nav class="index-navbar">
+                  <div class="bitcron_nav_container">
+                    <ul class="site_nav" >
+                      <li>
+                        <a :href="siteUrl" @click="clearCache" style="cursor: pointer;user-select: none;">首页</a>
+                      </li>
+                      <li v-for="(item, index) in siteNavBar" :key="index">
+                        <a href="javascript:void(0);" @click.stop="toPages(item.path)" style="cursor: pointer;user-select: none;">{{item.name}}</a>
+                      </li>
+                    </ul>
+                  </div>
+                </nav>
 
-            </div>
-          </header>
+              </div>
+            </header>
           </div>
 
           <!-- content -->
@@ -269,8 +269,11 @@ export default {
       },
 
     },
-    mounted(){
+    // 发送请求
+    created() {
       this.loadAsideData()
+    },
+    mounted(){
       this.$bus.$on('disLoading', this.disLoading)
 
       // 监听鼠标滚轮事件
@@ -292,7 +295,12 @@ export default {
 @media screen and (max-width: 820px) {
   #wrapper {
     margin-top: 0 !important;
+    padding-top: 0 !important;
     box-shadow: none !important;
+  }
+  .conBox {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
   }
   .sidebar ul {
     flex-direction: column;
@@ -356,9 +364,8 @@ a {
 
 .conBox {
   padding-top: 60px;
-  // margin-top: 60px;
+  transition: .3s;
 }
-
 .bg {
   width: 100vw;
   height: 100vh;
@@ -373,12 +380,12 @@ a {
 #wrapper {
   max-width: 820px;
   min-height: 800px;
-  background: #fff;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  box-shadow: 0px 0 10px #000;
   margin: 0 auto;
-  box-shadow: 5px 7px 10px rgb(237, 237, 237);
   -webkit-transition: all 0.6s ease;
   transition: all 0.6s ease;
-
 
   // 标题信息
   header {
@@ -387,6 +394,7 @@ a {
     padding-left: 5%;
     padding-right: 5%;
     padding-top: 75pt;
+    border-bottom: 10px solid rgb(26, 26, 26);
     // 背景虚化
     // backdrop-filter: blur(2px);
     // background-color: rgba(255,255,255,.1);
@@ -498,6 +506,7 @@ a {
       margin: 1.2em 0 0.8em;
       font-weight: 400;
       font-size: 14px;
+      color: var(--sm-main-color);
     }
     .clear {
       clear: both;
@@ -520,7 +529,7 @@ a {
       a {
         list-style: square;
         margin-left: 1em;
-        color: #999;
+        color: var(--sm-secondary-color);
       }
     }
   }

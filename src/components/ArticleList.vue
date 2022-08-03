@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="topbar">
     <section class="article-list" ref="articleList">
       <el-skeleton :rows="4" animated v-if="errMsg !== ''" class="skeleton"/>
       <el-skeleton :rows="5" animated v-if="errMsg !== ''" class="skeleton"/>
@@ -159,7 +159,7 @@ export default {
         }
       }
     },
-    mounted() {
+    created() {
       this.dataLoad()
       this.artCount()
     }
@@ -173,6 +173,8 @@ a {
 .skeleton {
   margin-top: 40px;
 }
+
+
 // 文章列表块
 .article-list {
   padding: 0 20px;
@@ -182,28 +184,30 @@ a {
   // 文章标题
   .article_title {
     text-decoration: none;
-    color: #1f1f1f;
+    color: var(--sm-title-color);
     font-size: .8em;
     cursor: pointer;
 
     &::before {
       content: "# ";
-      color: #555;
+      color: var(--sm-viceicon-color);
     }
+
+    
   }
   
   // 热度span
   .hot {
     font-size: .5em;
     margin-left: 0.3em;
-    color: #bbb;
+    color: var(--sm-secondary-color);
     font-weight: 400;
   }
 
   // 文章节选
   .excerpt {
     p {
-      color: #333;
+      color: var(--sm-primary-color);
       letter-spacing: .2px;
       line-height: 1em;
       text-align: left;
@@ -214,14 +218,14 @@ a {
 
   // 文章元信息
   .meta {
-    color: #bbb;
+    color: var(--sm-secondary-color);
     font-size: .8em;
     padding: 20px 0 40px;
     border-bottom: 1px solid #f3f3f3;
 
     a {
       text-decoration: none;
-      color: #bbbbbb;
+      color: var(--sm-secondary-color);
     }
     .item {
       margin-right: 10px;
@@ -237,21 +241,21 @@ a {
   .clear {
     clear: both;
   }
-  .next,.prev {
-    color: #999;
-    cursor: pointer;
-  }
-  .next:hover,
-  .prev:hover {
-    color: #333;
-  }
-  .next {float: right;}
-  .prev {float: left;}
+  // .next,.prev {
+  //   color: #999;
+  //   cursor: pointer;
+  // }
+  // .next:hover,
+  // .prev:hover {
+  //   color: #333;
+  // }
+  // .next {float: right;}
+  // .prev {float: left;}
 }
 
 .list-page-2 {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 

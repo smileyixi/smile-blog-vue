@@ -36,9 +36,7 @@ body {
 	width: 0px;
 }
 /* scroll轨道背景 */
-::-webkit-scrollbar-track{ 
-	/* background: #fff; */
-}
+/* ::-webkit-scrollbar-track{ background: #fff;} */
 /* 滚动滑块 */
 ::-webkit-scrollbar-thumb {
 	background: #c8c8c8;
@@ -46,9 +44,9 @@ body {
   height: 100px;
 }
 
-@media screen and (max-width: 820px) {
+/* @media screen and (max-width: 820px) {
   ::-webkit-scrollbar {
     width: 0;
   }
-}
+} */
 </style>

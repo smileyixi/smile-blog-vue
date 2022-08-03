@@ -20,11 +20,6 @@ export default {
             meta: '只是个博客罢了...',
         }
     },
-    methods: {
-        
-    },
-    mounted() {
-    }
 }
 </script>
 

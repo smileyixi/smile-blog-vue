@@ -702,16 +702,15 @@ export default {
             }
         },
     },
-    mounted() {
+    created() {
         // 固定获取数据
         this.onLoad()
         this.bindNextPre()
         this.loadUser()
         this.onLoadComent()
-        // document.title = `${this.article.title} - ${this.siteTitle}`
-
+    },
+    mounted() {
         this.$bus.$on('onLoadComment', this.onLoadComent)
-        
         
     }
 
@@ -721,13 +720,12 @@ export default {
 <style lang="less" scoped>
 // 文章元信息
 .meta {
-    color: #bbb;
     font-size: .8em;
     padding: 20px 0 40px;
 
-    a {
+    * {
     text-decoration: none;
-    color: #bbbbbb;
+        color: var(--sm-secondary-color);
     }
     .item {
     margin-right: 10px;
@@ -737,43 +735,43 @@ export default {
 // 文章内容
 .content {
     font-size: .875em;
-    margin-top: 50px;
+    padding-top: 50px;
     h1 {
         font-size: 1.4em;
         padding: 0 5%;
         margin: 1em 0 0.8em;
         text-align: left;
+        color: var(--sm-title-color);
     }
     .meta {
         padding: 20px 0 40px 5%;
     }
     .post p {
         padding: 0 5%;
-        color: #333;
+        color: var( --sm-title-color);
     }
 }
 
 // 换页
 .pager {
-    border-top: 1px solid #eee;
-    border-bottom: 1px solid #eee;
     text-align: center;
     overflow: auto;
     margin: 2em 0 0;
+    border-top: var(--sm-page-line);
     font-size: .875em;
 
     a {
         padding: 20px 0;
         display: inline-block;
-        color: #999999;
+        color: var(--sm-primary-color);
         text-decoration: none;
         line-height: 1em;
         text-align: center;
         transition: .3s;
     }
     a:hover {
-        color: rgb(91, 91, 91);
-        background: #eee;
+        color: var(--sm-main-color);
+        background: var(--sm-dark-color);
         cursor: pointer;
         user-select: none;
     }
@@ -818,7 +816,7 @@ export default {
 
 // 评论
 .comments-bg {
-    background-color: #f7f7f7;
+    background-color: var(--sm-comment-bgcolor);
 
     .comments {
         max-width: 738px;
@@ -845,6 +843,7 @@ export default {
                     justify-content: space-evenly;
                     align-items: center;
 
+                    // 信息输入
                     .comInput {
                         position: relative;
                         width: 32.5%;
@@ -853,8 +852,8 @@ export default {
                         outline:none;
                         resize: none;
                         border: none;
-                        border-bottom: 1px dashed #dedede;
-                        color: #b2b2b5;
+                        border-bottom: var(--sm-comment-line);
+                        color: var(--sm-secondary-color);
                     }
                     .comInput:focus {
                         border-bottom: 1px dashed rgb(58, 58, 58);
@@ -869,7 +868,7 @@ export default {
                     width: 100%;
                     padding-top: 10px;
                     #sediter {
-                        color: #b2b2b5;
+                        color: var(--sm-secondary-color);
                         width: 100%;
                         min-height: 8.75em;
                         font-size: .875em;
@@ -880,7 +879,7 @@ export default {
                         padding: 10px 5px;
                     }
                     #sediter:focus {
-                        border-bottom: 1px solid #e9e9e9;
+                        border-bottom: 1px solid var(--sm-main-color);
                     }
                 }
 
@@ -892,10 +891,10 @@ export default {
                     display: flex;
                     justify-content: flex-end;
                     svg {
-                        fill: #b2b2b5;
+                        fill: var(--sm-primary-color);
                     }
                     svg:hover {
-                        fill: #767678;
+                        fill: var(--sm-secondary-color);
                     }
 
                     .emoQAQ {
@@ -960,11 +959,11 @@ export default {
                         }
                         label {
                             display: flex;
-                            color:#999;
+                            color: var(--sm-comment-color);
                         }
                         input[type="checkbox"] {
                             outline: none;
-                            border: 1px solid #999;
+                            border: 1px solid var(--sm-comment-color);
                             background: transparent;
                         }
                     }
@@ -974,9 +973,9 @@ export default {
                             height: 30px;
                             width: 100px;
                             float: right;
-                            background: #333;
+                            background: var(--sm-comment-btncolor);
                             border: none;
-                            color: white;
+                            color: var(--sm-main-color);
                         }
                     }
                 }
@@ -1004,6 +1003,7 @@ export default {
                 margin-top: 10px;
                 font-size: 1.25em;
                 font-weight: 600;
+                color: var(--sm-main-color);
             }
 
             .scards {

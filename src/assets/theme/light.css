@@ -1,0 +1,43 @@
+/* 夜间主题风格 */
+
+
+body {
+
+    /* 主题色 */
+    --sm-main-color: white;
+    --sm-smilesl-color: AliceBlue;
+    --sm-smilesl-bgcolor: CornflowerBlue ;
+    --sm-dark-color: rgba(31, 31, 31, .8);
+    --sm-primary-color: rgb(153, 153, 153);
+    --sm-secondary-color: #f4f4f4;
+    /* 评论 */
+    --sm-comment-bgcolor:#f7f7f7;
+
+    /* 文章列表 */
+    --sm-title-color: #eeeeee;
+    --sm-viceicon-color: #555;
+
+    /* smilesl player */
+    --player-color: white;
+    --player-fontsize: 12px;
+    --player-lrc-fontsize: 12px;
+    --player-vicelrc-fontsize: 9px;    /* 副歌词大小 */
+    --player-vicelrc-color: rgb(221, 220, 220);       /* 副歌词色彩 */
+
+    /* progress */
+    --progress-color: rgb(67, 109, 234);
+
+    /* check button */
+    --check-bgcolor: transparency;
+    --check-selected-bgcolor: rgb(55, 55, 55);
+    --check-border: 1px solid rgb(32, 32, 32);
+    --check-radioCircle: rgb(66, 66, 66);
+
+    /* 搜索框 */
+    --sm-search-bgcolor: rgba(144, 144, 144, 0.2);
+    --sm-search-color: #eeeeee;
+
+    /* 导航栏 */
+    --sm-navgition-bgcolor: #000;
+
+}

@@ -99,7 +99,7 @@ export default {
             if(newV === '') clearTimeout(this.loopLoadDataTimer)
         }
     },
-    mounted() {
+    created() {
         this.onLoad()
     }
 }

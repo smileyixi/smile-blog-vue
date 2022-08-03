@@ -57,7 +57,7 @@ export default {
             this.onLoad()
         } 
     },
-    mounted() {
+    created() {
         this.onLoad()
     }
 }
