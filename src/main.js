@@ -8,6 +8,7 @@ import store from './store'
 import '@/assets/theme/index.css'
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
+import myfunc from '@/plugins/myfunc'
 
 
 Vue.config.productionTip = false

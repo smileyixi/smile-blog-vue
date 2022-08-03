@@ -17,7 +17,7 @@ body {
     --progress-color: rgb(67, 109, 234);
 
     /* check button */
-    --check-bgcolor: rgb(161, 161, 161);
+    --check-bgcolor: transparency;
     --check-selected-bgcolor: rgb(79, 79, 79);
     --check-border: 2px solid rgb(66, 66, 66);
     --check-radioCircle: rgb(66, 66, 66);
@@ -32,6 +32,11 @@ body {
 .el-pagination.is-background .el-pager li:not(.disabled).active {
     color: #FFF;
     background-color: var(--sm-smilesl-bgcolor) !important;
+}
+/* 控制图标 */
+.ctl-icon {
+    cursor: pointer;
+    user-select: none;
 }
 
 /* 字体 */

@@ -378,21 +378,17 @@ export default {
             commentCount: 0,
         }
     },
-    watch: {
-        '$route'(to,from){
-            const art = JSON.parse(sessionStorage.getItem(`art_${this.$route.query.id}`))
-            if(!art) this.onLoad()
-            else this.article = art
-            this.bindNextPre()
-        } 
-    },
     methods: {
         toRouter(id) {
             this.$router.push({
                 path: '/article?id=' + id
             })
         },
+        // 获取文章详情
         onLoad() {
+            // const art = JSON.parse(sessionStorage.getItem(`art_${this.$route.query.id}`))
+            // if(art !== '' ) this.article = art
+
             // 获取文章详情
             getArticleById({id: this.$route.query.id}).then(result=>{
                 this.article = result.data
@@ -404,8 +400,6 @@ export default {
                 this.errMsg = err
             })
 
-
-            // 获取评论
         },
         // 获取评论
         onLoadComent() {
@@ -458,10 +452,7 @@ export default {
             setTimeout(() => {
                 const ui = document.querySelector('.cardui')
                 if(ui) {
-                    ui.scrollIntoView({
-                        block: 'end',  // 底部对齐
-                        behavior: 'smooth', // 平滑滑动
-                    })
+                    this.$func.scrollInto('end', ui)
                     
                     setTimeout(() => {
                         if (!this.username) document.getElementsByClassName('vname')[0].focus()
@@ -614,11 +605,7 @@ export default {
 
                 // 刷新评论 
                 this.onLoadComent()
-
-                document.documentElement.scrollIntoView({
-                    block: 'end',  // 底部对齐
-                    behavior: 'smooth', // 平滑滑动
-                })
+                this.$func.scrollInto('end')
             }).catch(err=>{
                 this.$message.error({message: err})
                 this.errMsg = err
@@ -707,22 +694,21 @@ export default {
     },
     watch: {
         "$route"(to, from) {
-            this.onLoadComent()
+            if(from.path == '/article') {
+                this.onLoad()
+                this.onLoadComent()
+                this.bindNextPre()
+                this.$func.scrollInto('')
+            }
         },
     },
     mounted() {
-        const art = JSON.parse(sessionStorage.getItem(`art_${this.$route.query.id}`))
-        this.browserInfo = JSON.parse(sessionStorage.getItem('browerinfo'))
-        if(!art || this.browserInfo === '') {
-            this.onLoad()
-        }
-        else this.article = art
-
         // 固定获取数据
+        this.onLoad()
         this.bindNextPre()
         this.loadUser()
-        if(this.commentList.length == 0) this.onLoadComent()
-        document.title = `${this.article.title} - ${this.siteTitle}`
+        this.onLoadComent()
+        // document.title = `${this.article.title} - ${this.siteTitle}`
 
         this.$bus.$on('onLoadComment', this.onLoadComent)
         

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <section class="article-list">
+    <section class="article-list" ref="articleList">
       <el-skeleton :rows="4" animated v-if="errMsg !== ''" class="skeleton"/>
       <el-skeleton :rows="5" animated v-if="errMsg !== ''" class="skeleton"/>
       <article style="margin-top: 50px;" class="article" 
@@ -151,12 +151,11 @@ export default {
       },
       // 当前页发生变化时加载文章
       pageNum(newPage, oldPage) {
+        this.$refs.articleList.style.height='1000px'
+        this.dataLoad(newPage)
         if(newPage != oldPage) {
-          this.dataLoad(newPage)
-          document.documentElement.scrollIntoView({
-                block: 'start',
-                behavior: 'smooth',
-          })
+          this.$func.scrollInto('start')
+          this.$refs.articleList.style.height='100%'
         }
       }
     },

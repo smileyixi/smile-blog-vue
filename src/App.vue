@@ -1,5 +1,5 @@
 <template>
-  <div id="app" >
+  <div id="app">
     <router-view></router-view>
   </div>
 </template>
@@ -17,7 +17,6 @@ export default {
 }
 body {
     color: #333;
-    background: #f7f7f7;
     font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
@@ -27,7 +26,10 @@ body {
     text-align: justify;
     word-wrap: break-word;
     background-attachment: fixed;
+    height: 100%;
+    width: 100%;
 }
+
 
 /* 滚动条整体 */
 ::-webkit-scrollbar {

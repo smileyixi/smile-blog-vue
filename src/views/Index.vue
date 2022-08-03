@@ -1,108 +1,105 @@
 <template>
-  <section style="margin: 0; padding: 0;" class="conBox" ref="indexmain">
-    <!-- snow -->
-    <canvas id="Snow" width="100%" height="100%"></canvas>
+    <section class="conBox" ref="indexmain" >
+      <!-- snow -->
+      <canvas id="Snow" width="100%" height="100%"></canvas>
 
-    <!--加载动画 -->
-    <div id="loading" v-if="isLoading" class="loading">
-      <div class="blur"></div>
-      <svg width="128" height="128" viewBox="0 0 128 128" class="svg-loading">
-        <filter id="displacementFilter">
-          <feTurbulence type="turbulence" baseFrequency="0.047624336107621165" numOctaves="2" result="turbulence" style="transform: scale(1);"></feTurbulence>
-          <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="14.334814110133927" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
-        </filter>
-        <polygon points="64 68.64 8.574 100 63.446 67.68 64 4 64.554 67.68 119.426 100" 
-        style="filter: url(&quot;#displacementFilter&quot;); transform: scale(1);stroke:#55e8b2;stroke-width:6;stroke-opacity:0.1" fill="#159969"></polygon>
-      </svg>
-    </div>
-
-    <!-- toTop -->
-    <div id="toTop" @click="toTop">
-      <span>△</span>
-    </div>
-
-    <!-- 侧边小栏 -->
-    <!-- <Navbar /> -->
-
-    <Header></Header>
-    
-    <main>
-      <div class="wrapper" id="wrapper">
-        <!-- headerBar -->
-        <div class="grass" :style="`background-image: url(${tit_bg})`">
-          <header  id="header">
-          <div class="description" style="float: right">
-            <a :href="siteUrl" style="cursor: pointer;">
-              <!-- 博客标题 -->
-              <h1 class="effect_1" :style="`background-image: url(${tit_font_bg})`" >
-                {{siteTitle}}
-              </h1>
-            </a>
-            
-            <!-- 个性标签 -->
-            <h2 class="autograph">{{siteDescription}}</h2>
-
-            <!-- 导航栏 -->
-            <nav class="index-navbar">
-              <div class="bitcron_nav_container">
-                <ul class="site_nav" >
-                  <li>
-                    <a :href="siteUrl" @click="clearCache" style="cursor: pointer;user-select: none;">首页</a>
-                  </li>
-                  <li v-for="(item, index) in siteNavBar" :key="index">
-                    <a href="javascript:void(0);" @click.stop="toPages(item.path)" style="cursor: pointer;user-select: none;">{{item.name}}</a>
-                  </li>
-                </ul>
-              </div>
-            </nav>
-
-          </div>
-        </header>
-        </div>
-
-        <!-- content -->
-        <main class="contents">
-          <!-- 文章列表 -->
-          <ArticleList v-show="this.$route.path == '/'" :disLoading="disLoading"/>
-          <router-view name="index_view"></router-view>
-
-        </main>
+      <!--加载动画 -->
+      <div id="loading" v-if="isLoading" class="loading">
+        <div class="blur"></div>
+        <svg width="128" height="128" viewBox="0 0 128 128" class="svg-loading">
+          <filter id="displacementFilter">
+            <feTurbulence type="turbulence" baseFrequency="0.047624336107621165" numOctaves="2" result="turbulence" style="transform: scale(1);"></feTurbulence>
+            <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="14.334814110133927" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+          </filter>
+          <polygon points="64 68.64 8.574 100 63.446 67.68 64 4 64.554 67.68 119.426 100" 
+          style="filter: url(&quot;#displacementFilter&quot;); transform: scale(1);stroke:#55e8b2;stroke-width:6;stroke-opacity:0.1" fill="#159969"></polygon>
+        </svg>
       </div>
 
-      <!-- 聚合列表 -->
-      <aside class="aside ">
-        <!-- 文章 -->
-        <div class="aside-left sidebar">
-          <h3>随机文章</h3>
-          <ul>
-            <li style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
-                :title="asideArt.title"
-                v-for="(asideArt, index) in asideArticleList" :key="index"
-              ><a :href="siteUrl+'/article?id='+asideArt._id" style="cursor: pointer;">{{asideArt.title}}</a>
-            </li>
-          </ul>	
-          <div class="clear"></div>
+      <!-- toTop -->
+      <div id="toTop" @click="toTop">
+        <span>△</span>
+      </div>
+
+      <Header></Header>
+      
+      <main>
+        <div class="wrapper" id="wrapper">
+          <!-- headerBar -->
+          <div class="grass" :style="`background-image: url(${tit_bg})`">
+            <header  id="header">
+            <div class="description" style="float: right">
+              <a :href="siteUrl" style="cursor: pointer;">
+                <!-- 博客标题 -->
+                <h1 class="effect_1" :style="`background-image: url(${tit_font_bg})`" >
+                  {{siteTitle}}
+                </h1>
+              </a>
+              
+              <!-- 个性标签 -->
+              <h2 class="autograph">{{siteDescription}}</h2>
+
+              <!-- 导航栏 -->
+              <nav class="index-navbar">
+                <div class="bitcron_nav_container">
+                  <ul class="site_nav" >
+                    <li>
+                      <a :href="siteUrl" @click="clearCache" style="cursor: pointer;user-select: none;">首页</a>
+                    </li>
+                    <li v-for="(item, index) in siteNavBar" :key="index">
+                      <a href="javascript:void(0);" @click.stop="toPages(item.path)" style="cursor: pointer;user-select: none;">{{item.name}}</a>
+                    </li>
+                  </ul>
+                </div>
+              </nav>
+
+            </div>
+          </header>
+          </div>
+
+          <!-- content -->
+          <main class="contents">
+            <!-- 文章列表 -->
+            <ArticleList v-show="this.$route.path == '/'" :disLoading="disLoading"/>
+            <router-view name="index_view"></router-view>
+
+          </main>
         </div>
 
-        <!-- 标签 -->
-        <div class="aside-right sidebar">
-          <h3>分门别类</h3>
-          <ul>
-            <li v-for="(asideCate, index) in asideCategoryList" :key="index">
-              <a href="javascript:void(0);" @click.stop="toCategory(asideCate._id)" style="cursor: pointer;">{{asideCate.title}}<span> {{asideCate.count}}篇</span></a></li>
-            </ul>
-        </div>
-      </aside>
-    </main>
-    <Footer></Footer>
-  </section>
+        <!-- 聚合列表 -->
+        <aside class="aside ">
+          <!-- 文章 -->
+          <div class="aside-left sidebar">
+            <h3>随机文章</h3>
+            <ul>
+              <li style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
+                  :title="asideArt.title"
+                  v-for="(asideArt, index) in asideArticleList" :key="index"
+                ><a :href="siteUrl+'/article?id='+asideArt._id" style="cursor: pointer;">{{asideArt.title}}</a>
+              </li>
+            </ul>	
+            <div class="clear"></div>
+          </div>
+
+          <!-- 标签 -->
+          <div class="aside-right sidebar">
+            <h3>分门别类</h3>
+            <ul>
+              <li v-for="(asideCate, index) in asideCategoryList" :key="index">
+                <a href="javascript:void(0);" @click.stop="toCategory(asideCate._id)" style="cursor: pointer;">{{asideCate.title}}<span> {{asideCate.count}}篇</span></a></li>
+              </ul>
+          </div>
+        </aside>
+      </main>
+      <Footer></Footer>
+      <div class="bg" :style="`background: url(${bg})`"></div>
+    </section>
 </template>
 
 <script>
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 import ArticleList from "../components/ArticleList.vue";
-import Navbar from '../components/Navbar.vue'
 import { getBlogList } from '@/request/blogApi'
 import { getCategoryList, getCategoryCount } from '@/request/categoryApi'
 import anime from 'animejs'
@@ -110,14 +107,14 @@ import { snow } from '@/plugins/snow'
 
 export default {
   name: "MainIndex",
-  components: { Header, Footer, ArticleList, Navbar },
+  components: { Header, Footer, ArticleList },
   data() {
     return {
       // source
       tit_bg: require("@/assets/img/tit_bg.jpg"),
       photo: require("@/assets/img/photo.png"),
       tit_font_bg: require("@/assets/img/tit_font_bg.jpg"),
-      bg: require("@/assets/img/bg.png"),
+      bg: require("@/assets/img/bg_main.jpg"),
       // 主题设置
       siteUrl: 'http://localhost:8080',
       siteTitle: '霜冷の秘密基地',
@@ -258,7 +255,7 @@ export default {
         if (document.documentElement.scrollTop > 10) {
           document.getElementById('toTop').classList.add('sm-hide')
         }
-      }
+      },
     },
     watch: {
       // 加载数据后，解除loding状态
@@ -292,7 +289,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
 @media screen and (max-width: 820px) {
   #wrapper {
     margin-top: 0 !important;
@@ -358,12 +354,27 @@ a {
     pointer-events: none;
 }
 
+.conBox {
+  padding-top: 60px;
+  // margin-top: 60px;
+}
+
+.bg {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index:-1
+}
+
 #wrapper {
   max-width: 820px;
   min-height: 800px;
   background: #fff;
   margin: 0 auto;
-  margin-top: 60px;
   box-shadow: 5px 7px 10px rgb(237, 237, 237);
   -webkit-transition: all 0.6s ease;
   transition: all 0.6s ease;

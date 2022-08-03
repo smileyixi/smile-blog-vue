@@ -65,16 +65,20 @@
               <!-- 左边栏 -->
               <div class="ctrl-left">
                 <!-- 前一曲 -->
-                <span>
+                <span class="ctl-icon">
                   <svg t="1659454323694" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8906" width="14" height="14"><path d="M896 304.7v414.6L618.41 512 896 304.7m37.67-101.62c-5.09 0-10.31 1.51-15.04 4.85L536.92 492.98c-12.71 9.49-12.71 28.54 0 38.03l381.72 285.06c4.73 3.34 9.95 4.85 15.04 4.85 13.62 0 26.33-10.8 26.33-26.28V229.36c-0.01-15.48-12.72-26.28-26.34-26.28zM432.62 304.7v414.6L155.03 512l277.59-207.3m37.67-101.62c-5.09 0-10.31 1.51-15.04 4.85L73.53 492.98c-12.71 9.49-12.71 28.54 0 38.03l381.72 285.06c4.73 3.34 9.95 4.85 15.04 4.85 13.62 0 26.33-10.8 26.33-26.28V229.36c0-15.48-12.71-26.28-26.33-26.28z" p-id="8907" fill="#ffffff"></path></svg>
                 </span>
                 <!-- 中间的暂停播放 -->
-                <span style="margin: 0 20px">
-                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                  <!-- <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> -->
+                <span class="ctl-icon" style="margin: 0 20px;">
+                  <!-- play -->
+                  <svg v-show="!playState" @click="clickPlay"
+                    viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  <!-- pause -->
+                  <svg v-show="playState" @click="clickPlay"
+                    viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
                 </span>
                 <!-- 后一曲 -->
-                <span>
+                <span class="ctl-icon">
                   <svg t="1659454150912" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8453" width="14" height="14"><path d="M128 304.7L405.59 512 128 719.3V304.7M90.33 203.08c-13.62 0-26.33 10.8-26.33 26.28v565.28c0 15.48 12.71 26.28 26.33 26.28 5.09 0 10.31-1.51 15.04-4.85l381.72-285.06c12.71-9.49 12.71-28.54 0-38.03L105.37 207.92c-4.73-3.33-9.95-4.84-15.04-4.84zM591.38 304.7L868.97 512 591.38 719.3V304.7m-37.67-101.62c-13.62 0-26.33 10.8-26.33 26.28v565.28c0 15.48 12.71 26.28 26.33 26.28 5.09 0 10.31-1.51 15.04-4.85l381.72-285.06c12.71-9.49 12.71-28.54 0-38.03L568.75 207.92c-4.73-3.33-9.95-4.84-15.04-4.84z" p-id="8454" fill="#ffffff"></path></svg>
                 </span>
               </div>
@@ -117,6 +121,7 @@ export default {
       mainKey: '',      // 搜索主键
       searchKeyword: '',// 关键词
       opensearchLrc: false,  // 开lrc，关search
+      playState: false,      // 音乐播放状态
 
       windBell: require("@/assets/img/windBell.png"),
       windBell2: require("@/assets/img/windBell2.png"),
@@ -127,25 +132,6 @@ export default {
       this.$router.push({
         path: path
       })
-    },
-    loadSearch(len) {
-      var searchAnime = anime({
-        targets: '.input_search',
-        duration: 2000,
-        width: len
-      });
-    },
-    // 推出搜索栏
-    preSearch(){
-      this.loadSearch(200)
-      this.$refs.inputSearch.focus()
-      // 推荐搜索
-      this.$refs.inputSearch.placeholder = '阁下需要看的什么呢？'
-    },
-    // 关闭搜索栏
-    disSearch() {
-      this.loadSearch(90)
-      this.$refs.inputSearch.blur()
     },
     // 搜索方法
     search() {
@@ -234,10 +220,13 @@ export default {
       }
       
     },
+    // 暂停 / 播放
+    clickPlay() {
+      this.playState = !this.playState
+    }
   },
   mounted() {
-    this.loadSearch(90)
-    this.keyDown()
+    // this.keyDown()
     this.detectOS()
     this.consoleGura()
   }
