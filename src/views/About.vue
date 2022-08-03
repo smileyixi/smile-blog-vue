@@ -30,6 +30,7 @@ export default {
         font-size: 1.8em;
         margin: 1.5em 0 1em;
         display: block;
+        color: var(--sm-title-color);
     }
 
     .meta {
@@ -48,7 +49,7 @@ export default {
     }
 
     .content-post {
-        color: #333;
+        color: var(--sm-comment-color);
         font-size: .875em;
         list-style: square;
         padding: 20px;

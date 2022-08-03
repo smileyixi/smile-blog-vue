@@ -26,7 +26,7 @@ body {
     --player-fontsize: 12px;
     --player-lrc-fontsize: 12px;
     --player-vicelrc-fontsize: 9px;    /* 副歌词大小 */
-    --player-vicelrc-color: rgb(221, 220, 220);       /* 副歌词色彩 */
+    --player-vicelrc-color: rgb(144, 144, 144);       /* 副歌词色彩 */
 
     /* progress */
     --progress-color: rgb(67, 109, 234);

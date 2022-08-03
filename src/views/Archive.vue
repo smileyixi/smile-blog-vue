@@ -10,10 +10,13 @@
         <h2 class="hrBox" >{{(archive_list[0].year).length>30?(archive_list[0].year).slice(0,30):archive_list[0].year}}</h2>
         <ul class="archived-posts archiveBar" v-infinite-scroll="load" style="overflow:auto"> 
             <li v-for="art in archive_list" :key="art._id">
+                <!-- 时间 -->
                 <time class="post">{{art.month}}.{{art.day}}</time>
+                <!-- 标题 -->
                 <a href="javascript:void(0);" @click="toRouter(art._id)" class="post">{{art.title}}</a>
+                <!-- 分类 -->
                 <span class="post cate" v-for="cate in art.category" :key="cate._id">
-                    <a href="javascript:void(0);" @click="toCategory(cate._id)">{{cate.title}}</a>
+                    <a href="javascript:void(0);" @click="toCategory(cate._id)">{{cate.title||'没有分类'}}</a>
                 </span>
             </li>
         </ul>
@@ -115,6 +118,7 @@ export default {
         font-size: 1.8em;
         margin: 1.5em 0 1em;
         display: block;
+        color: var(--sm-title-color);
     }
 
     .archiveBar {
@@ -128,7 +132,7 @@ export default {
         padding: 10px 0 20px;
     }
     h2 {
-        color: #333;
+        color: var(--sm-comment-color);
         font-size: 1.2em;
         padding: 1em 0 0.8em;
         &::before {
@@ -159,7 +163,7 @@ export default {
             // 分类span
             .cate {
                 margin-left: 10px;
-                background: rgb(169, 169, 169);
+                background: var(--sm-comment-bgcolor);
                 padding: 3px;
                 a {
                   text-decoration: none;

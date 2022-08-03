@@ -71,6 +71,7 @@ export default {
         font-size: 1.8em;
         margin: 1.5em 0 1em;
         display: block;
+        color: var(--sm-title-color);
     }
 
     .meta {

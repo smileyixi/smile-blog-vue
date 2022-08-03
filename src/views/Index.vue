@@ -130,7 +130,7 @@ export default {
         },
         {
           name: '友链',
-          path: '/',
+          path: 'page',
         },
         {
           name: '时光',
