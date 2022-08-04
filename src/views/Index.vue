@@ -274,6 +274,7 @@ export default {
       this.loadAsideData()
     },
     mounted(){
+      // 事件总线 - 关闭loading动画
       this.$bus.$on('disLoading', this.disLoading)
 
       // 监听鼠标滚轮事件

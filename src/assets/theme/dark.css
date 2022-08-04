@@ -1,12 +1,13 @@
 /* 夜间主题风格 */
 
 
-body {
+:root {
 
     /* 主题色 */
     --sm-main-color: rgb(242, 242, 242);
     --sm-smilesl-color: AliceBlue;
     --sm-smilesl-bgcolor: CornflowerBlue ;
+    --sm-smilesl-selected-bgcolor: rgb(52, 96, 216);
     --sm-dark-color: rgba(31, 31, 31, .8);
     --sm-primary-color: rgb(153, 153, 153);
     --sm-secondary-color: #f4f4f4;
@@ -18,7 +19,7 @@ body {
 
     /* 文章列表 */
     --sm-title-color: #eeeeee;
-    --sm-viceicon-color: #555;
+    --sm-viceicon-color: #555;              /* # */
     --sm-page-line: 1px solid #202020;
 
     /* smilesl player */
@@ -44,4 +45,21 @@ body {
     /* 导航栏 */
     --sm-navgition-bgcolor: #000;
 
+}
+
+/* 头部 */
+.navgitionBar {
+    color: var(--sm-main-color);
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    /* box-shadow: 1px 1px 3px rgb(82, 82, 82); */
+}
+
+/* 分页按钮 */
+.el-pagination.is-background .btn-next, .el-pagination.is-background .btn-prev, .el-pagination.is-background .el-pager li {
+    margin: 0 5px;
+    background-color: var(--sm-dark-color);
+    color: var(--sm-main-color);
+    min-width: 30px;
+    border-radius: 2px;
 }

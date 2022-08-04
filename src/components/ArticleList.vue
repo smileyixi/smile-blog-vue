@@ -119,20 +119,6 @@ export default {
         })
 
       },
-      articleBarIn() {
-        const a = new anime({
-          targets: '.article',
-          width: 900,
-          delay: anime.stagger(200)
-        })
-
-        const b = new anime({
-          targets: '.article',
-          translateX: 20,
-          delay: anime.stagger(200)
-        })
-
-      },
       // 加载文章总数
       artCount() {
         getArticleCount({}).then(count=>{

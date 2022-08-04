@@ -5,15 +5,15 @@
         <h2>Login</h2>
       </header>
       <main>
-        <div><input type="text" placeholder="Username" v-model="username"></div>
-        <div><input type="password" placeholder="Password" v-model="password"></div>
+        <div><input type="text" placeholder="username" v-model="username"></div>
+        <div><input type="password" placeholder="password" v-model="password"></div>
         <button id="btn_login" @click="verifyUser">LOGIN</button>
       </main>
       <footer>
         <p>{{dailyPost}}</p>
         
       </footer>
-    </div>
+    </div> 
   </section>
 </template>
 
@@ -23,8 +23,8 @@ export default {
   name: 'login',
   data() {
     return {
-      username: 'test',
-      password: 'test',
+      username: '',
+      password: '',
       dailyPost: '簌簌冰上花，灿灿耀金华  —— 霜冷'
     }
   },
@@ -51,18 +51,22 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  background: var(--sm-dark-color);
 }
 
 .box {
   height: 500px;
   width: 350px;
 
+  // login string
   header {
     h2 {
       margin: 50px 0 30px 0;
       text-align: center;
+      color: var(--sm-smilesl-bgcolor);
     }
   }
+  // 输入用户名和密码
   main {
     display: flex;
     align-items: center;
@@ -80,6 +84,7 @@ export default {
       position: relative;
       transition: .3s;
 
+      // 输入框聚焦
       &:focus {
         box-shadow: 1px 1px 5px var(--sm-smilesl-bgcolor);
         width: 300px;
@@ -99,18 +104,19 @@ export default {
       transition: .3s;
 
       &:hover {
-        box-shadow: 2px 2px 2px rgb(183, 183, 183);
+        background: var(--sm-smilesl-selected-bgcolor);
       }
     }
     
   }
 
+  // 每日一句
   footer {
       p {
         text-align: center;
-        color: rgb(131, 131, 131);
+        color: var(--sm-primary-color);
         font-size: .8m;
-        border-bottom: 1px dashed rgb(195, 195, 195);
+        border-bottom: var(--sm-comment-line);
       }
   }
 }

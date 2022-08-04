@@ -26,11 +26,4 @@
 }
 
 
-/* 头部 */
-.navgitionBar {
-    color: var(--sm-main-color);
-    background-color: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
-    /* box-shadow: 1px 1px 3px rgb(82, 82, 82); */
-}
 
