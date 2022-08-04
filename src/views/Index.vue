@@ -252,7 +252,7 @@ export default {
             block: 'start',
             behavior: 'smooth',
         })
-        if (document.documentElement.scrollTop > 10) {
+        if (document.documentElement.scrollTop > 100) {
           document.getElementById('toTop').classList.add('sm-hide')
         }
       },

@@ -5,9 +5,9 @@
         <h2>Login</h2>
       </header>
       <main>
-        <div><input type="text" placeholder="username" v-model="username"></div>
-        <div><input type="password" placeholder="password" v-model="password"></div>
-        <button id="btn_login" @click="verifyUser">LOGIN</button>
+        <div><input @keydown.enter="verifyUser" type="text" placeholder="username" v-model="username"></div>
+        <div><input @keydown.enter="verifyUser" type="password" placeholder="password" v-model="password"></div>
+        <button id="btn_login" @click="verifyUser">SIGN</button>
       </main>
       <footer>
         <p>{{dailyPost}}</p>
@@ -19,6 +19,9 @@
 
 <script>
 import anime from 'animejs'
+import { login } from '../request/userApi'
+import Cookie from 'js-cookie'
+
 export default {
   name: 'login',
   data() {
@@ -29,14 +32,47 @@ export default {
     }
   },
   methods: {
+    toRouter() {
+      this.$router.push({
+        path: `/smilesl?createAt=${new Date()}`
+      })
+    },
     verifyUser() {
-      // if(/^[a-zA-Z]{1}([a-zA-z0-9]|[._]{4,9})/.test(this.password)) {
-      //   this.$message.warning({message:"请输入5到10位，以字母开头的密码"})
-      // }
+      if(this.username && this.password) {
+        login({username:this.username, password:this.password}).then(result=>{
+          if(result.data.token) {
+            this.$message.success({message:"登陆成功！"})
 
+            // 保存token和用户, token创建时间
+            this.$store.commit('setUserInfo', {
+              user: result.data.user,
+              token: result.data.token,
+              createTime: result.data.createTime
+            })
+
+            // 跳转到后台
+            this.toRouter()
+
+          } else {
+            this.$message.error({message:"登陆失败！"})
+          }
+        })
+      } else {
+        this.$message.warning({message: "请填写完整的用户信息"})
+      }
       
+    },
+    // 在这里处理token
+    onLoad() {
+      const token = this.$store.state.token || Cookie.get('token')
+      if (token) {
+        this.$message.info('你已经登陆过了')
+      }
     }
   },
+  mounted() {
+    this.onLoad()
+  }
 
 }
 </script>
@@ -64,6 +100,7 @@ export default {
       margin: 50px 0 30px 0;
       text-align: center;
       color: var(--sm-smilesl-bgcolor);
+      text-shadow: 2px 2px 0px rgb(154, 53, 243);
     }
   }
   // 输入用户名和密码
@@ -82,6 +119,7 @@ export default {
       color: rgb(5, 15, 30);
       font-weight: 600;
       position: relative;
+      text-align: center;
       transition: .3s;
 
       // 输入框聚焦
@@ -95,6 +133,7 @@ export default {
       width: 100px;
       border-radius: 30px;
       border: none;
+      outline: none;
       background: var(--sm-smilesl-bgcolor);
       color: var(--sm-smilesl-color);
       font-weight: bold;
@@ -103,7 +142,7 @@ export default {
       cursor: pointer;
       transition: .3s;
 
-      &:hover {
+      &:hover, &:focus {
         background: var(--sm-smilesl-selected-bgcolor);
       }
     }

@@ -39,15 +39,22 @@ axios.interceptors.response.use(
     error => {
         if(error.response.status) {
             switch (error.response.status) {
-                // 401: 未登录
-                // 未登录则跳转登录页面，并携带当前页面的路径
-                // 在登录成功后返回当前页面，这一步需要在登录页操作。  
                 case 400: 
                     Message({
                         message: '数据请求失败X_X',
                         type: 'error'
                     })
                     break
+                // 422: 登录失败
+                case 422:
+                    Message({
+                        message: '用户名或密码错误！',
+                        type: 'error'
+                    })
+                    break
+                // 401: 未登录
+                // 未登录则跳转登录页面，并携带当前页面的路径
+                // 在登录成功后返回当前页面，这一步需要在登录页操作。 
                 case 401:
                     router.replace({
                         path: '/login',
@@ -87,7 +94,7 @@ axios.interceptors.response.use(
                 // 其他错误抛出错误提示
                 default:
                     Message({
-                        message: error.response.data.message,
+                        message: "请求失败！",
                         duration: 1400,
                         type: 'error'
                     })

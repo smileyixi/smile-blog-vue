@@ -1,5 +1,6 @@
 import VueRouter from 'vue-router'
 import store from '@/store'
+import Cookies from 'js-cookie'
 
 //获取原型对象上的push函数
 const originalPush = VueRouter.prototype.push
@@ -83,7 +84,8 @@ router.beforeEach((to,from,next)=>{
     // 设置固定标题
     if(to.meta.title) document.title = to.meta.title
 
-	if(to.fullPath==="/index"){ //判断当前路由是否需要进行权限控制
+    //判断当前路由是否需要进行权限控制
+	if(to.fullPath==="/index"){ 
 		router.push("/")
 	}
 	else{
