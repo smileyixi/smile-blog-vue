@@ -5,10 +5,11 @@ import 'element-ui/lib/theme-chalk/index.css';
 import VueRouter from 'vue-router'
 import router from './router'
 import store from './store'
-import '@/assets/theme/index.css'
 import mavonEditor from 'mavon-editor'
+
 import 'mavon-editor/dist/css/index.css'
-import myfunc from '@/plugins/myfunc'
+import '@/assets/theme/index.css'
+import '@/plugins/myfunc'
 
 
 Vue.config.productionTip = false
