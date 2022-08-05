@@ -4,8 +4,8 @@
 
 import axios from 'axios'
 import store from '@/store/index'
-import router from '@/router'
-import { Message } from 'element-ui';
+import router from '@/router/index'
+import { Message } from 'element-ui'
 
 axios.defaults.baseURL = 'http://127.0.0.1:8888'
 axios.defaults.timeout = 6000
@@ -73,17 +73,11 @@ axios.interceptors.response.use(
                         type: 'warning'
                     })
                     // clean token
-                    localStorage.removeItem('token')
-                    store.commit('setToken', null)
+                    store.commit('cleanToken')
                     // to login
-                    setTimeout(() => {                        
-                        router.replace({                            
-                            path: '/login',                            
-                            query: { 
-                                redirect: router.currentRoute.fullPath 
-                            }                        
-                        });                    
-                    }, 1000);
+                    router.push({                            
+                        path: '/login'                       
+                    });
                     break
                 case 404:
                     Message({

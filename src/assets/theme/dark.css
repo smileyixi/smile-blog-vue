@@ -44,6 +44,8 @@
 
     /* 导航栏 */
     --sm-navgition-bgcolor: #000;
+    --sm-frost-navbgcolor: rgba(20, 20, 20, 0.9);
+    --sm-frost-navshadow: 0px 2px 0px rgb(32, 19, 97);
 
 }
 

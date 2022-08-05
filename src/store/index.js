@@ -6,14 +6,14 @@ Vue.use(Vuex)
 const actions = {}
 
 const mutations = {
-    // 加载token
+    // 页面加载token
     loadToken(state) {
         state.token = Cookie.get('token') || state.token
         state.user = localStorage.getItem('_user')
         state.createTime = localStorage.getItem('_createTime')
     },
 
-    // 设置token和用户信息
+    // 登陆设置token和用户信息
     setUserInfo(state, data) {
         state.user = data.user
         state.token = data.token
@@ -24,17 +24,19 @@ const mutations = {
         localStorage.setItem('_createTime', data.createTime)
     },
 
-    // 清除token
+    // 登陆失效清除token
     cleanToken(state) {
         state.token = ''
         Cookie.remove('token')
         localStorage.removeItem('_user')
+        localStorage.removeItem('_isvt')
     }
 }
 const state = {
     // 模拟用户数据
     user: {},
-    token: ''
+    token: '',
+    isLogin: false,
 }
 
 export default new Vuex.Store({

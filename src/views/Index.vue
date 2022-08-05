@@ -60,7 +60,7 @@
           <!-- content -->
           <main class="contents">
             <!-- 文章列表 -->
-            <ArticleList v-show="this.$route.path == '/'" :disLoading="disLoading"/>
+            <ArticleList v-show="this.$route.name === 'index'" :disLoading="disLoading"/>
             <router-view name="index_view"></router-view>
 
           </main>
@@ -138,8 +138,8 @@ export default {
           path: 'page',
         },
         {
-          name: '订阅',
-          path: 'page',
+          name: '登陆',
+          path: 'login',
         }
         
       ],
@@ -161,7 +161,7 @@ export default {
       // to pages
       toPages(path) {
         this.$router.push({
-          name: path
+          path: path
         })
       },
       // 前往分类

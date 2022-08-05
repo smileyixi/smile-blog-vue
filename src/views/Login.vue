@@ -13,14 +13,13 @@
         <p>{{dailyPost}}</p>
         
       </footer>
+
     </div> 
   </section>
 </template>
 
 <script>
-import anime from 'animejs'
-import { login } from '../request/userApi'
-import Cookie from 'js-cookie'
+import { login, tokenVerify } from '../request/userApi'
 
 export default {
   name: 'login',
@@ -33,9 +32,24 @@ export default {
   },
   methods: {
     toRouter() {
+      const date = Date.now()
       this.$router.push({
-        path: `/smilesl?createAt=${new Date()}`
+        path: `/frostdock?createAt=${date}`
       })
+    },
+    open() {
+        this.$confirm('你已经登陆过了，是否跳转到后台?', 'Tips', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.toRouter()
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消跳转'
+          });          
+        });
     },
     verifyUser() {
       if(this.username && this.password) {
@@ -49,6 +63,7 @@ export default {
               token: result.data.token,
               createTime: result.data.createTime
             })
+            localStorage.setItem("_isvt", result.data.token)
 
             // 跳转到后台
             this.toRouter()
@@ -62,16 +77,14 @@ export default {
       }
       
     },
-    // 在这里处理token
-    onLoad() {
-      const token = this.$store.state.token || Cookie.get('token')
-      if (token) {
-        this.$message.info('你已经登陆过了')
-      }
+    toFrost() {
+      tokenVerify().then(()=>{
+        this.open()
+      })
     }
   },
   mounted() {
-    this.onLoad()
+    this.toFrost()
   }
 
 }

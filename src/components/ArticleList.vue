@@ -52,7 +52,6 @@
 <script>
 import { getBlogList, getArticleCount } from '@/request/blogApi'
 import { getCommnetCount } from '@/request/commentApi'
-import anime from 'animejs'
 
 export default {
     name: 'ArticleList',
@@ -61,8 +60,6 @@ export default {
         siteUrl: 'http://localhost:8080',
         articleList: [],
         errMsg: '',
-        next: false,
-        pre: false,
         loopLoadDataTimer: '',
         pageNum: parseInt(this.$route.query.page||1),
         total: 0
@@ -148,7 +145,7 @@ export default {
     created() {
       this.dataLoad()
       this.artCount()
-    }
+    },
 }
 </script>
 

@@ -71,10 +71,28 @@ const router = new VueRouter({
             path: '/login',
             component: ()=>import('@/views/Login.vue')
         },
+        {
+            path: '/frostdock',
+            name: 'frostdock',
+            component: ()=>import('../views/FrostDock.vue'),
+            meta: {
+                title: site_title
+            },
+            children: [
+                {
+                    path: 'writeblog',
+                    components: {
+                        frost_view:()=>import('@/components/frostdock/WriteBlog.vue')
+                    },
+                    meta: {
+                        title: '新的文章'
+                    }
+                }
+            ]
+        }
         
     ]
 })
-
 
 // 全局前置守卫：初始化时执行、每次路由切换前执行
 router.beforeEach((to,from,next)=>{
@@ -88,6 +106,11 @@ router.beforeEach((to,from,next)=>{
 	if(to.fullPath==="/index"){ 
 		router.push("/")
 	}
+    else if(to.fullpath==="/frostdock") {
+        if(this.$store.state.token !== '' || 1) {
+
+        }
+    }
 	else{
 		next() //放行
 	}
