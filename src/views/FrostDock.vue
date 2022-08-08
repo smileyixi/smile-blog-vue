@@ -98,7 +98,7 @@
       <Controller v-if="this.$route.name === 'frostdock'" />
 
       <!-- <section class="sm-card" style="height:300px"></section> -->
-      <section class="sm-card" style="margin-top: 100px">
+      <section class="sm-card">
         <router-view name="frost_view"></router-view>
       </section>
       

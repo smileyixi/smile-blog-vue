@@ -8,7 +8,7 @@ import { get , post} from './http'
 /**
  * 获取博客文章列表
  * @param {String} url [请求的url地址]
- * @param {Object} params {keyword:关键字,limit:指定数量，random:true[随机获取]}
+ * @param {Object} params {all:获取全部[不传则获取6个],keyword:关键字,limit:指定数量，random:true[随机获取]}
  */
 export const getBlogList = (params) => {
     return get('api/blog/list', params)

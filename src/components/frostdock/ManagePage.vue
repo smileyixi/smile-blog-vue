@@ -11,7 +11,6 @@
             </h2>
             <button
             class="btn-base btn-offset"
-            @click="toRouter('/frostDock/writeblog')"
             >新增</button>
 
             <!-- 作者只显示我的 -->
@@ -79,10 +78,8 @@
         
         <!-- 表格 -->
         <el-table
-        :data="articleList.filter(data => !search || data.title.toLowerCase().includes(search.toLowerCase()))"
-        style="width: 100%;height: 500px;overflow: auto;"
-        v-infinite-scroll="loadNextTick"
-        >
+        :data="articleList.filter(data => !search || articleList.title.toLowerCase().includes(search.toLowerCase()))"
+        style="width: 100%">
             <el-table-column
             type="selection"
             width="50">
@@ -120,90 +117,47 @@
                 @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
             </template>
             </el-table-column>
-            
         </el-table>
-        <div class="status">
-            <p v-show="isLoading">Loading...</p>
-            <p v-show="noMore">no more...</p>
-        </div>
-
-        <!-- 统计 -->
-        <div class="total">
-            <span>总计: {{artCount}}</span>
-        </div>
-
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import { getBlogList, getArticleCount } from '@/request/blogApi'
-export default {
-data() {
-    return {
-            articleList: [],
-            search: '',
-            artCount: 0,
-            isAuthor: false,
-            isLoading: false,
-            noMore: false,
-            tick: 0, // 跳过的数据个数
-            username: ''    // 本地用户名
-        }
+
+  export default {
+    props: [
+        'pageTitle', 
+    ],
+    data() {
+      return {
+        articleList: [
+            {
+                title: 'test',
+                author: 'smilesl',
+                category: '默认分类',
+                createAt: '2022-8-8'
+            },
+            {
+                title: 'test',
+                author: 'smilesl',
+                category: '默认分类',
+                createAt: '2022-8-8'
+            }
+        ],
+        search: '',
+        isAuthor: false,
+      }
     },
     methods: {
-        toRouter(path) {
-            this.$router.push(path)
-        },
-        handleEdit(index, row) {
+      handleEdit(index, row) {
         console.log(index, row);
-        },
-        handleDelete(index, row) {
+      },
+      handleDelete(index, row) {
         console.log(index, row);
-        },
-        // 加载文章数据 - 实时
-        onLoad() {
-            this.isLoading = true
-            getBlogList({skip:this.tick, keyword: this.search}).then(result=>{
-                if (result.data.length == 0) {
-                    this.isLoading = false
-                    return this.noMore = true
-                }
-                result.data.forEach(art=>{
-                    art.category = art.category[0].title
-                    art.createAt = this.$func.localDate(art.createAt)   // 转为本地时间
-                })
-                this.articleList = [...this.articleList, ...result.data]
-                
-                this.isLoading = false
-                this.tick+=7
-            })
-        },
-        // 异步加载下一次数据 - 滑动到表格底部加载
-        loadNextTick() {
-            // 没有数据了则不继续加载
-            if(this.noMore) return
-            // 上一次数据加载完成才加载一下次的
-            if(!this.isLoading) {
-                this.onLoad()
-            }
-        },
-        // 加载总数
-        getCount() {
-            getArticleCount().then(result=>{
-                this.artCount = result
-            })
-        }
+      }
     },
-    created() {
-        this.onLoad()
-        this.getCount()
-    },
-    mounted() {
-        this.username = JSON.parse(localStorage.getItem('_user')).username
-    }
-}
+  }
 </script>
 
 <style lang="less" scoped>
@@ -222,7 +176,6 @@ data() {
 .wrapper {
     width: 90%;
     margin: 0 auto;
-    overflow-y:hidden;
 
     .info-col, .ctl-col {
         display: flex;
@@ -251,11 +204,6 @@ data() {
             height: 30px;
             box-shadow: 3px 3px 3px rgb(32, 32, 32);
         }
-        .btn-offset:hover {
-            background: rgb(63, 176, 100);
-            box-shadow: 3px 3px 3px rgb(63, 176, 100);
-        }
-
 
         // 只看我的按钮
         .btn-showmine {
@@ -333,20 +281,7 @@ data() {
     .el-table {
         margin-top: 20px;
         border-radius: 10px;
-    }
-
-    // 状态栏
-    .status {
-        background: #222;
-        border-radius: 20px;
-        height: 32px;
-    }
-
-    // 统计
-    .total {
-        padding-top: 15px;
-        color: var(--sm-primary-color);
-        font-size: .8em;
+        background-color: #000 !important;
     }
 }
 </style>

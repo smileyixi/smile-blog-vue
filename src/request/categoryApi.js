@@ -25,7 +25,7 @@ export const getCategoryCount = (params) => {
 
 /**
  * 获取分类通过cid
- * @param {*} params 
+ * @param {*} params {cid}
  * @returns 
  */
  export const getCategoryByCid = (params) => {

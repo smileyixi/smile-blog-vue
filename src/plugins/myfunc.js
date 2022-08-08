@@ -13,5 +13,16 @@ export default Vue.prototype.$func = {
             block: position ||'start',
             behavior: 'smooth',
         })
+    },
+
+    /**
+     * 本地时区
+     * @param {Date} date 
+     * @returns 
+     */
+    localDate: (date) => {
+        const d = new Date(date || Date.now());
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        return d.toISOString();
     }
 }

@@ -16,7 +16,7 @@
       <div class="convertbox">
         <el-switch
           v-model="isMark"
-          active-color="#222"
+          active-color="var(--sm-frost-color)"
           inactive-color="#555"
           title="convertToHtml"
           >
