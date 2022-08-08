@@ -6,76 +6,46 @@
         <input type="text" placeholder="在这里键入标题" v-model="artTitle">
       </div>
 
-      <!-- 文章路径 -->
+      <!-- page路径 -->
       <div class="titleinfo">
-        <a :href="`${siteurl}/category/${cateCheck}`" target="_blank">
-          {{siteurl}}/category/{{cateCheck || '{cid}'}}/
-        </a>
+        <span>{{siteurl}}/pages/</span>
+        <input type="text" v-model="page" class="input-page" placeholder="page">
       </div>
 
-      <!-- 选择分类 -->
-      <div class="category">
-          <span class="catebar" 
-          v-for="cate in cateList" 
-          :key="cate._id"
-          @click="cateCheck = cate._id"
-          :class="{'cate-foucs': cateCheck==cate._id}"
-          :id="cate._id"
-          >{{cate.title}}</span>
+      <!-- 是否转换html -->
+      <div class="convertbox">
+        <el-switch
+          v-model="isMark"
+          active-color="#222"
+          inactive-color="#555"
+          title="convertToHtml"
+          >
+        </el-switch>
       </div>
 
     </div>
 
     <!-- 编辑器 -->
     <div class="mavonEditor">
-      <mavon-editor
+      <mavon-editor v-show="!isMark"
+      :toolbars="markdownOption" 
+      @change="convert"
+      />
+      <mavon-editor v-show="isMark"
       :toolbars="markdownOption" 
       v-model="content"
-      @imgAdd="$imgAdd"
-      @imgDel="$imgDel"
-      ref=md
       />
     </div>
 
     <!-- 文章信息 -->
     <div class="artinfo">
-      <!-- 标签管理 -->
-      <div class="tags">
-        <!-- 添加tag -->
-        <div class="addtag">
-          <el-input
-            class="input-new-tag"
-            v-if="inputVisible"
-            v-model="inputValue"
-            ref="saveTagInput"
-            size="small"
-            @keyup.enter.native="handleInputConfirm"
-            @blur="handleInputConfirm"
-          >
-          </el-input>
-          <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
-        </div>
 
-        <!-- 标签预览 -->
-        <el-tag
-          :key="tag"
-          v-for="tag in tags"
-          class="tag"
-          closable
-          :disable-transitions="false"
-          @click="handleClose(tag)"
-          @close="handleClose(tag)">
-          {{tag}}
-        </el-tag>
-
-      </div>
-
-      <!-- 文章元信息 -->
+      <!-- 元信息 -->
       <div class="meta">
         <!-- 作者 -->
         <div class="metacard">
-          <span>文章作者</span>
-          <span class="primary-color" style="border-bottom: var(--sm-comment-line);">{{user.username}}</span>
+          <span>页面描述</span>
+          <input type="text" v-model="meta" class="input-page primary-color" placeholder="meta..">
         </div>
 
         <!-- 选择时间 -->
@@ -110,10 +80,7 @@
   </section>
 </template>
 <script>
-import { getCategoryList } from '../../request/categoryApi'
-import { insertArticle } from '../../request/blogApi'
-import { imgurl_user } from '@/config/account'
-import axios from 'axios'
+import { createPage } from '@/request/pageApi'
 export default {
   name: 'WriteBlog',
   data() {
@@ -144,17 +111,13 @@ export default {
       },
       siteurl: 'http://localhost:8080',
       // data
-      user: '',       // 用户信息
-      cateList: '',   // 分类列表
-      cateCheck: '',  // 选中的分类id
-      artTitle: '',   // 文章标题
-      content: ' ',   // 输入的文字内容
+      artTitle: '',   // 标题
+      content: ' ',   // 内容
+      page: '',       // 页面name
+      meta: '',       // 描述
 
-      tags: ['日常'],
-      inputVisible: false,
-      inputValue: '',
-
-      disComment: false,
+      disComment: false,  // 禁止评论
+      isMark: false,   // 转化为html
 
       // date
       datetime: '',
@@ -180,57 +143,30 @@ export default {
             }
           }]
       },
-      img_file: []
     };
   },
   methods: {
-    toRouter(id) {
+    toRouter() {
       this.$router.push({
-        path: `/article?id=${id}`
+        path: `/pages/${this.page}`
       })
     },
     convert(_, render) {
       this.content = render
     },
-    onLoad() {
-      getCategoryList({}).then(result=> {
-        this.cateList = result.data
-      })
-    },
-    // 移除标签
-    handleClose(tag) {
-        this.tags.splice(this.tags.indexOf(tag), 1);
-    },
-    // 显示输入标签input
-    showInput() {
-      this.inputVisible = true;
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-    // 添加标签并收起input
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue == '' || (inputValue && (inputValue.length < 2 || inputValue.length > 10))) {
-        this.$message.warning({'message': '标签只能是2到10个字符哦'})
-      } else {
-        this.tags.push(inputValue);
-      }
-      this.inputVisible = false;
-      this.inputValue = '';
-    },
+
     // 禁用评论
     checkDis() {
       this.disComment = !this.disComment
     },
     // 发布面板
-    open(id) {
-      this.$confirm('成功发布文章，是否跳转到文章∠( ᐛ 」∠)＿', 'Tips', {
+    open(page) {
+      this.$confirm(`成功创建自定义页面 - ${this.page}，是否跳转到页面∠( ᐛ 」∠)＿`, 'Tips', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.toRouter(id)
+        this.toRouter(page)
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -238,101 +174,42 @@ export default {
         });          
       });
     },
-    // 发布文章
+    // 发布
     submit() {
       // 校验数据
       if(!this.artTitle) {
-        return this.$message.warning('请输入文章标题')
+        return this.$message.warning('请输入页面标题')
       }
-      if(!this.cateCheck) {
-        return this.$message.warning('请选择分类')
+      if(!this.page) {
+        return this.$message.warning('请输入页面路径')
       }
       if(!this.content) {
         return this.$message.warning('内容不能为空')
       }
-      if(!this.user) {
-        return this.$message.warning('用户信息错误，请返回登陆！')
-      }
 
-      insertArticle({
+      createPage({
+        page: this.page,
         title: this.artTitle,
-        cid: this.cateCheck,
-        author: this.user.username,
-        uid: this.user._id,
+        meta: this.meta,
+        isMark: this.isMark,
         content: this.content,
-        createAt: this.datetime?this.datetime:Date.now(),
-        hot: 3,
+        createAt: this.datetime,
         disComment: this.disComment?1:0
-      }).then(result=> {
-        console.log(result.data)
+      }).then(result=>{
+        // 页面路径重复，返回错误信息
+        if(result.error == -1) {
+          return this.$message.error(result.msg)
+        }
         this.open(result.data)
-      }).catch(err=> {
-        // this.$message.error('文章发布失败！')
+        
+      }).catch(err=>{
         this.$message.error(err)
       })
-    },
 
-    // 更改地址
-    changeLocalUrlToOrigin(pos, picurl) {
-      // ![5a26106d87444d5597997e2e6a973301.jpeg](1)
-      const pattern = /!\[(.*?)\]\((.*?)\)/mg;
-      let matcher;
-
-      while ((matcher = pattern.exec(this.content)) !== null) {
-        // console.log(matcher);
-        if(matcher[2] == pos) {
-          this.content = this.content.replace(
-            matcher[0], `![5a26106d87444d5597997e2e6a973301.jpeg](${picurl})`
-          )
-
-          this.img_file[pos] = `![5a26106d87444d5597997e2e6a973301.jpeg](${picurl})`
-        }
-      }
-
-    },
-
-    // 图片上传
-    $imgAdd(pos, $file) {
-      axios.post('/upload', {
-            file: $file, 
-            token : imgurl_user.token, 
-            uid: imgurl_user.uid
-        }, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            }
-        }).then(result=>{
-          const data = result.data
-          console.log(data)
-          if(data.code == 200) {
-            this.$message.success('上传成功')
-          }
-          this.changeLocalUrlToOrigin(pos, data.data.url)
-          // this.img_file.push(`http://test/pic${pos}.png`)
-        }).catch(err=>{
-            this.$message.error(err)
-        })
-      
-    },
-
-    // 删除图片
-    $imgDel(pos) {
-      // console.dir(this.img_file[pos[0-1]])
-      // this.content = this.content = this.content.replace(
-      //   this.img_file[pop[0]],''
-      // )
-      // delete this.img_file[pos[0-1]]
     }
     
   },
-  watch: {
-    process() {
-      console.log(this.progress)
-    }
-  },
   created() {
-    this.onLoad()
-    this.user = JSON.parse(this.$store.state.user)
   },
 };
 </script>
@@ -342,11 +219,6 @@ export default {
   width: 100%;
   height: 100%;
 }
-
-// 固定editer高度
-// .v-note-wrapper {
-//   height: 600px !important;
-// }
 
 // click cate
 .cate-foucs {
@@ -365,6 +237,14 @@ export default {
   padding: 20px 0;
   border-radius: 20px 20px 0 0 ;
   background: var(--sm-dark-color);
+  position: relative;
+
+  // 转换html按钮
+  .convertbox {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
 
   // 输入标题
   .title {
@@ -388,76 +268,29 @@ export default {
     }
   }
   
-  // 文章路径
+  // page路径
   .titleinfo {
     color: var(--sm-primary-color);
-  }
 
-  // 分类
-  .category {
-    margin-top: 10px;
-    cursor: pointer;
-    .catebar {
-      height: 30px;
-      width: 100px;
-      display: inline-block;
-      line-height: 30px;
-      color: var(--sm-primary-color);
-      margin: 0 20px;
-      transition: .3s;
-
-      input[type="radio"] {
-        -webkit-appearance: none;
-      }
-      input[type="radio"]:checked{
-        border-left: 2px solid var(--sm-frost-color);
-        background: #000;
-      }
-
-      &:hover {
-        background: var(--sm-frost-color);
-        color: var(--sm-main-color);
-      }
+    .input-page {
+      margin-left: 2px;
+      outline: none;
+      background: transparent;
+      border: none;
+      border-bottom: var(--sm-comment-line);
+      color: var(--sm-main-color);
+      width: 80px;
     }
   }
 
 }
 
 .artinfo {
-  // 标签
-  .tags {
-    padding: 20px 20px;
-    display: flex;
-    background: var(--sm-dark-color);
-    justify-content: flex-start;
-    align-items: center;
-
-    // 每个标签
-    .tag {
-      flex: 1;
-      display: inline-block;
-      margin: 10px 1.8em;
-      max-width: 200px;
-      background: var(--sm-dark-color);
-      color: var(--sm-primary-color);
-      border: none;
-      cursor: pointer;
-      &:hover {
-        background: var(--sm-frost-color);
-        color: var(--sm-main-color);
-        box-shadow: 2px 1px 20px var(--sm-frost-color);
-      }
-    }
-    
-    // 添加标签的盒子
-    .addtag {
-      width: 20%;
-    }
-  }
 
   // 文章元信息
   .meta {
     display: flex ;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-around;
     padding: 20px;

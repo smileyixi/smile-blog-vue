@@ -26,8 +26,15 @@
       <main>
         <div class="wrapper" id="wrapper">
           <!-- headerBar -->
-          <div class="grass" :style="`background-image: url(${tit_bg})`">
-            <header  id="header">
+          <div :style="`background-image: url(${tit_bg})`">
+            <header  id="header" :class="{'grass': isChangeNavbg}">
+              <!-- 虚幻开关 -->
+              <el-switch
+                class="swtichPositon"
+                v-model="isChangeNavbg"
+                active-color="#222"
+                inactive-color="#555">
+              </el-switch>
               <div class="description" style="float: right">
                 <a :href="siteUrl" style="cursor: pointer;">
                   <!-- 博客标题 -->
@@ -47,7 +54,22 @@
                         <a :href="siteUrl" @click="clearCache" style="cursor: pointer;user-select: none;">首页</a>
                       </li>
                       <li v-for="(item, index) in siteNavBar" :key="index">
-                        <a href="javascript:void(0);" @click.stop="toPages(item.path)" style="cursor: pointer;user-select: none;">{{item.name}}</a>
+                        <a href="javascript:void(0);" @click.stop="toRouter(item.path)" style="cursor: pointer;user-select: none;">{{item.name}}</a>
+                      </li>
+                      <!-- 自定义页面列表 -->
+                      <li>
+                        <!-- <a style="cursor: pointer;user-select: none;" class="pagelist">Pages</a> -->
+                        <el-dropdown>
+                          <el-button type="primary">
+                            Pages<i class="el-icon-arrow-down el-icon--right"></i>
+                          </el-button>
+                          <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item
+                            v-for="(item, index) in pagesList" :key="index"
+                            @click.native="toPages(item.page)"
+                            >{{item.page}}</el-dropdown-item>
+                          </el-dropdown-menu>
+                        </el-dropdown>
                       </li>
                     </ul>
                   </div>
@@ -101,6 +123,7 @@ import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 import ArticleList from "../components/ArticleList.vue";
 import { getBlogList } from '@/request/blogApi'
+import { getPage } from '@/request/pageApi'
 import { getCategoryList, getCategoryCount } from '@/request/categoryApi'
 import anime from 'animejs'
 import { snow } from '@/plugins/snow'
@@ -122,26 +145,29 @@ export default {
       siteNavBar: [   // 导航栏
         {
           name: '关于',
-          path: "about",
+          path: "/about",
         },
         {
           name: '归档',
-          path: "archive",
+          path: "/archive",
         },
         {
           name: '友链',
-          path: 'page',
-        },
-        {
-          name: '时光',
-          description: '古今过往，似水流年',
-          path: 'page',
+          path: '/pages',
+          page: 'flinks',
         },
         {
           name: '登陆',
-          path: 'login',
+          path: '/login',
         }
         
+      ],
+      pagesList: [
+        {
+          name: '时光',
+          description: '古今过往，似水流年',
+          page: 'timer',
+        },
       ],
       // 博客数据
       asideArticleList: [], // 聚合文章列表
@@ -154,14 +180,20 @@ export default {
       ],
       isLoading: true,
       errMsg: '',
+      isChangeNavbg: false,
 
     };
   },
     methods: {
-      // to pages
-      toPages(path) {
+      toRouter(path) {
         this.$router.push({
           path: path
+        })
+      },
+      // to pages
+      toPages(page) {
+        this.$router.push({
+          path: `/pages/${page}`,
         })
       },
       // 前往分类
@@ -215,6 +247,21 @@ export default {
         
  
       },
+      // 加载自定义列表
+      loadPages() {
+        // const tempPages = JSON.parse(sessionStorage.getItem('_tempPages'))
+        // console.log(tempPages)
+        // if(tempPages != null) {
+        //   return this.pagesList = tempPages
+        // }
+
+        getPage({}).then(result=>{
+          this.pagesList = result.data
+
+          sessionStorage.setItem('_tempPages', JSON.stringify(result.data))
+        })
+
+      },
       // 加载动画
       loading() {
         anime({
@@ -245,7 +292,7 @@ export default {
       // 清除缓存
       clearCache() {
         sessionStorage.clear()
-        localStorage.clear()
+        // localStorage.clear()
       },
       toTop(e) {
         document.documentElement.scrollIntoView({
@@ -272,6 +319,7 @@ export default {
     // 发送请求
     created() {
       this.loadAsideData()
+      this.loadPages()
     },
     mounted(){
       // 事件总线 - 关闭loading动画
@@ -329,6 +377,44 @@ export default {
   
 }
 
+
+// 自定义页面列表
+.el-button--primary {
+    color: var(--sm-main-color);
+    background-color: transparent;
+    border: none;
+    border-top: 2px solid #555;
+}
+.el-dropdown-menu {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: var(--sm-primary-color);
+}
+.el-dropdown-menu__item:hover {
+  background: var(--sm-dark-color);
+  color: var(--sm-main-color);
+}
+// 开关
+.swtichPositon {
+  position: absolute;
+  opacity: 0;
+  top: 10px;
+  left: 10px;
+  transition: .3s;
+}
+#header {
+  position: relative;
+}
+#header:hover .swtichPositon {
+  opacity: 1;
+}
+// 背景虚幻
+.grass {
+  // 背景虚化
+    backdrop-filter: blur(2px);
+    background-color: rgba(0,0,0,.1);
+}
+
 // 回到顶部
 #toTop {
   height: 35px;
@@ -336,7 +422,7 @@ export default {
   position: fixed;
   bottom: 40px;
   right: 40px;
-  background: #fff;
+  background: var(--sm-dark-color);
   box-shadow: 0 10px 20px 0 hsl(289deg 7% 84%);
   border-radius: 50%;
   display: flex;
@@ -378,9 +464,10 @@ a {
   z-index:-1
 }
 
+// 文章列表包装
 #wrapper {
   max-width: 820px;
-  min-height: 800px;
+  // min-height: 800px;
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(5px);
   box-shadow: 0px 0 10px #000;
@@ -396,9 +483,6 @@ a {
     padding-right: 5%;
     padding-top: 75pt;
     border-bottom: 10px solid rgb(26, 26, 26);
-    // 背景虚化
-    // backdrop-filter: blur(2px);
-    // background-color: rgba(255,255,255,.1);
 
     // 图片铺满
     // background-size: cover;
@@ -491,6 +575,7 @@ a {
 
 }
 
+// 侧边栏
 .aside {
   height: 160px;
   padding-top: 20px;

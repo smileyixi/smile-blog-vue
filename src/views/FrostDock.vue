@@ -33,8 +33,8 @@
 
           <el-menu-item-group>
             <el-menu-item index="2-1" @click="toRouter('/frostdock/writeblog')">撰写文章</el-menu-item>
-            <el-menu-item index="2-2" @click="toRouter('/')">新增页面</el-menu-item>
-            <el-menu-item index="2-3" @click="toRouter('/')">新增用户</el-menu-item>
+            <el-menu-item index="2-2" @click="toRouter('/frostdock/writepage')">新增页面</el-menu-item>
+            <el-menu-item index="2-3" @click="toRouter('/frostdock')">新增用户</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
 
@@ -46,7 +46,7 @@
           </template>
 
           <el-menu-item-group>
-            <el-menu-item index="3-1" @click="toRouter('/')">内容文章</el-menu-item>
+            <el-menu-item index="3-1" @click="toRouter('/frostdock/manageArticle')">内容文章</el-menu-item>
             <el-menu-item index="3-2" @click="toRouter('/')">独立页面</el-menu-item>
             <el-menu-item index="3-3" @click="toRouter('/')">用户评论</el-menu-item>
             <el-menu-item index="3-4" @click="toRouter('/')">分类管理</el-menu-item>
@@ -75,24 +75,29 @@
 
     </aside>
 
-    <!-- 头部和main -->
-    <section :class="{'box':1, 'boxOffset': !isOpen}">
-      <header>
+    <!-- 头部 -->
+    <header>
         <div style="display: flex;align-items: center;" :class="{'headeroffset': isOpen, 'headeroffset-rev': !isOpen}">
           <button class="btn-ctrlAside" @click="isOpenAside">
             <i class="el-icon-menu"></i>
           </button>
           <ul class="items">
             <li class="item">{{user.username}}</li>
-            <li class="item">登出</li>
-            <li class="item">网站</li>
+            <li class="item" @click="loginOut">登出</li>
+            <li class="item">
+              <a :href="siteurl" target="blank">网站</a>
+            </li>
           </ul>
         </div>
         <PlayerBox />
       </header>
 
+    <!-- main -->
+    <section :class="{'box':1, 'boxOffset': !isOpen}">
       <!-- 主显示区域 -->
       <Controller v-if="this.$route.name === 'frostdock'" />
+
+      <!-- <section class="sm-card" style="height:300px"></section> -->
       <section class="sm-card" style="margin-top: 100px">
         <router-view name="frost_view"></router-view>
       </section>
@@ -118,10 +123,7 @@ export default {
       bg: require("@/assets/img/bg_main.jpg"),
 
       siteurl: 'http://localhost:8080',
-      user: {
-        username: 'whoami',
-        autograph: 'just so so..'
-      },
+      user: '',
       isOpen: true,
     }
   },
@@ -133,6 +135,12 @@ export default {
     },
     loadUser() {
       this.user = JSON.parse(this.$store.state.user) || JSON.parse(localStorage.getItem('_user'))
+      if (!this.user) {
+        this.user = {
+          username: 'whoami',
+          autograph: 'just so so..'
+        }
+      }
     },
     isOpenAside() {
       this.isOpen = !this.isOpen
@@ -156,6 +164,11 @@ export default {
         })
         this.$refs.picbox.style.display = 'flex'
       }
+    },
+    loginOut() {
+      this.$store.commit('cleanToken')
+      this.$message.info('用户登出')
+      this.$router.push({path: '/index'})
     },
   },
   watch: {
@@ -199,10 +212,15 @@ export default {
 body {
   height: 100%;
 }
+a {
+  text-decoration: none;
+  color: var(--sm-primary-color);
+}
 .box {
   right: 0;
-  position: fixed;
+  position: absolute;
   width: calc(100vw - 250px);
+  overflow: hidden;
 }
 .headeroffset {
   margin-left: 260px;
@@ -214,13 +232,10 @@ body {
 }
 // box
 .boxOffset {
-  height: 100vh !important;
-  width: 100vw !important;
+  width: 100% !important;
   left: 0 !important;
 }
 .continer {
-  height: 100vh;
-  width: 100vw;
   margin: 0rem;
   padding: 0rem;
   border: 0rem;
@@ -228,8 +243,7 @@ body {
   flex-flow: row nowrap;
   align-items: flex-start;
   text-align: center;
-
-  --sm-frost-color: #447dda;
+  overflow: hidden;
 }
 
 header {
@@ -398,6 +412,7 @@ aside {
 // 路由区域
 .sm-card {
   width: 90%;
+  overflow: hidden;
   margin: 60px auto;
   backdrop-filter: blur(10px);
   border-radius: 20px;

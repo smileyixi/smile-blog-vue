@@ -98,16 +98,22 @@ export default {
         }
 
         getBlogList({limit: 6, skip}).then(result=>{
-          this.articleList = result = result.data
+          this.articleList = result.data
           
-          sessionStorage.setItem(`articleList_${page}`, JSON.stringify(this.articleList) )
-
           // 获取评论数量
           this.articleList.forEach(i => {
             getCommnetCount({aid: i._id}).then(result=>{
               this.$set(i, 'comments', result.data)
             })
+
+            // 删除节选里的html标签
+            i.content = (i.content).replace(/(<.*?>)/ig, '')
           });
+
+          // 缓存
+          this.$$nextTick(()=>{
+            sessionStorage.setItem(`articleList_${page}`, JSON.stringify(this.articleList) )
+          })
         }).catch(err=>{
           this.errMsg = err
           this.loopLoadDataTimer = setTimeout(() => {
@@ -143,8 +149,12 @@ export default {
       }
     },
     created() {
-      this.dataLoad()
       this.artCount()
+      this.dataLoad()
+    },
+    mounted() {
+      
+      console.log(JSON.parse(sessionStorage.getItem('articleList_1')))
     },
 }
 </script>

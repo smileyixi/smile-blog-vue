@@ -36,7 +36,7 @@
             <div class="sm-main-item"> 
               <ul >
                 <li v-for="(item, index) in artList" :key="index">
-                  <a :href="`siteurl/article?id=${item._id}`">{{item.createAt.split('T')[0]}} {{item.title.slice(0,15)}}{{item.title.length>15?'...':''}}</a>
+                  <a :href="`${siteurl}/article?id=${item._id}`">{{item.createAt.split('T')[0]}} {{item.title.slice(0,15)}}{{item.title.length>15?'...':''}}</a>
                 </li>
               </ul>
             </div>
@@ -46,7 +46,7 @@
               <ul>
                 <li v-for="(item, index) in commentList" :key="index">
                   {{item.createAt.split('T')[0]}}
-                  <a :href="`siteurl/article?id=${item.aid}`">
+                  <a :href="`${siteurl}/article?id=${item.aid}`">
                     <span style="color: var(--sm-secondary-color)">{{item.author}}</span>
                   </a>
                   {{item.content.slice(0,30)}}{{item.content.length>30?'...':''}}
@@ -225,6 +225,7 @@ a {
 main {
   --sm-frost-color: #447dda;
   overflow: hidden;
+  overflow: auto;
   .sm-card {
     width: 90%;
     margin: 60px auto;

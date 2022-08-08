@@ -1,0 +1,14 @@
+/* 编辑器 */
+.v-show-content h1,
+.v-show-content ul
+{
+    color: #dbdbdb;
+}
+
+.v-show-content blockquote p {
+    color: rgb(234, 234, 234);
+}
+
+.v-show-content pre {
+    border-radius: 10px !important;
+}

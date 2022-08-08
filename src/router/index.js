@@ -59,17 +59,20 @@ const router = new VueRouter({
                     }
                 },
                 {
-                    path: 'page',
-                    name: 'page',
+                    path: 'pages/:page',
+                    name: 'pages',
                     components: {
                         index_view:()=>import('@/components/TemplatePage.vue')
-                    },
+                    }
                 },
             ]
         },
         {
             path: '/login',
-            component: ()=>import('@/views/Login.vue')
+            component: ()=>import('@/views/Login.vue'),
+            meta: {
+                title: `Login - ${site_title}`
+            }
         },
         {
             path: '/frostdock',
@@ -87,7 +90,34 @@ const router = new VueRouter({
                     meta: {
                         title: '新的文章'
                     }
-                }
+                },
+                {
+                    path: 'writepage',
+                    components: {
+                        frost_view:()=>import('@/components/frostdock/WritePage.vue')
+                    },
+                    meta: {
+                        title: '创建新页面'
+                    }
+                },
+                {
+                    path: 'manageArticle',
+                    components: {
+                        frost_view:()=>import('@/components/frostdock/ManageArticle.vue')
+                    },
+                    meta: {
+                        title: '管理文章'
+                    }
+                },
+                // {
+                //     path: 'manageArticle',
+                //     components: {
+                //         frost_view:()=>import('@/components/frostdock/ManageArticle.vue')
+                //     },
+                //     meta: {
+                //         title: '管理文章'
+                //     }
+                // }
             ]
         }
         

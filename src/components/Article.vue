@@ -23,7 +23,20 @@
         </div>
         <!-- post data -->
         <div class="post">
-            <p>{{article.content}}</p>
+            <!-- <article class="article" v-html="article.content"></article> -->
+            <mavon-editor
+            class="artWrapper"
+            :subfield="false"
+            defaultOpen="preview"
+            :toolbarsFlag="false"
+            :editable="false"
+            :scrollStyle="true"
+            :boxShadow="false"
+            :ishljs="true"
+            previewBackground="rgb(207 207 207 / 0%)"
+
+            v-model="article.content"
+            />
         </div>
     </article>
     <!-- 换页 -->
@@ -348,7 +361,8 @@
 <script>
 import { getArticleById, getPreById, getNextById } from '@/request/blogApi'
 import { insertComment, getCommentListByaid } from '@/request/commentApi'
-
+import "mavon-editor/dist/css/index.css";
+import "@/assets/theme/markView.css";
 export default {
     name: 'Article',
     data() {
@@ -449,7 +463,7 @@ export default {
             });
             
             // 滑动视距
-            setTimeout(() => {
+            this.$nextTick(()=>{
                 const ui = document.querySelector('.cardui')
                 if(ui) {
                     this.$func.scrollInto('end', ui)
@@ -459,10 +473,9 @@ export default {
                         else if (!this.email) document.getElementsByClassName('vemail')[0].focus()
                         else if (!this.usersite) document.getElementsByClassName('vusersite')[0].focus()
                         else ui.children[1].children[0].focus()
-                        
-                    }, 400);
+                    }, 300);
                 }
-            }, 100);
+            })
         },
         // 点击表情按钮
         callOwO(item) {
@@ -746,10 +759,13 @@ export default {
     .meta {
         padding: 20px 0 40px 5%;
     }
-    .post p {
-        padding: 0 5%;
-        color: var( --sm-title-color);
+
+    .markdown-body {
+        /* padding: 0 5% !important; */
+        background: transparent !important;
+        border: none !important;
     }
+    
 }
 
 // 换页

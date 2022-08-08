@@ -10,7 +10,7 @@ import { get , post} from './http'
  * @returns 
  */
 export const login = (params) => {
-    return post('/api/user/login', params)
+    return post('api/user/login', params)
 }
 
 /**
@@ -18,6 +18,6 @@ export const login = (params) => {
  * @returns 
  */
 export const tokenVerify = () => {
-    return post('/api/verify')
+    return post('api/verify')
 }
 

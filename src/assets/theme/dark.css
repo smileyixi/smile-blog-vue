@@ -11,6 +11,8 @@
     --sm-dark-color: rgba(31, 31, 31, .8);
     --sm-primary-color: rgb(153, 153, 153);
     --sm-secondary-color: #f4f4f4;
+    --sm-frost-color: #447dda;
+
     /* 评论 */
     --sm-comment-bgcolor:rgba(31, 31, 31, .9);
     --sm-comment-line: 1px dashed #6b6b6b;
@@ -64,4 +66,30 @@
     color: var(--sm-main-color);
     min-width: 30px;
     border-radius: 2px;
+}
+
+/* 链接 */
+a {
+    text-decoration: none;
+    color: var(--sm-primary-color);
+}
+
+a:hover {
+    color: var(--sm-main-color);
+}
+
+.btn-base {
+    cursor: pointer;
+    width: 50px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    color: var(--sm-primary-color);
+    background: #494949;
+    transition: .3s;
+}
+.btn-base:hover {
+    color: var(--sm-main-color);
+    background: var(--sm-frost-color);
+    box-shadow: 2px 1px 20px var(--sm-frost-color);
 }

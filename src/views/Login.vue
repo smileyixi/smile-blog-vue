@@ -10,8 +10,8 @@
         <button id="btn_login" @click="verifyUser">SIGN</button>
       </main>
       <footer>
-        <p>{{dailyPost}}</p>
-        
+        <p class="postkito">「 {{dailyPost.hitokoto}} 」</p>
+        <p class="postfrom">—— {{dailyPost.from}}</p>
       </footer>
 
     </div> 
@@ -20,6 +20,7 @@
 
 <script>
 import { login, tokenVerify } from '../request/userApi'
+import axios from 'axios'
 
 export default {
   name: 'login',
@@ -27,30 +28,31 @@ export default {
     return {
       username: '',
       password: '',
-      dailyPost: '簌簌冰上花，灿灿耀金华  —— 霜冷'
+      dailyPost: ''
     }
   },
   methods: {
     toRouter() {
       const date = Date.now()
-      this.$router.push({
+      this.$router.replace({
         path: `/frostdock?createAt=${date}`
       })
     },
     open() {
-        this.$confirm('你已经登陆过了，是否跳转到后台?', 'Tips', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.toRouter()
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消跳转'
-          });          
-        });
+      this.$confirm('你已经登陆过了，是否跳转到后台?', 'Tips', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.toRouter()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消跳转'
+        });          
+      });
     },
+    // 登陆信息校验
     verifyUser() {
       if(this.username && this.password) {
         login({username:this.username, password:this.password}).then(result=>{
@@ -77,14 +79,36 @@ export default {
       }
       
     },
-    toFrost() {
+    // 登陆状态校验
+    verifyState() {
+      // - 登陆了条后台
+      // - 验证token状态，若token过期则由axios拦截器执行
       tokenVerify().then(()=>{
         this.open()
       })
+    },
+    // 每日一句
+    loadQuote() {
+      const api = 'https://v1.hitokoto.cn/?c=i&encode=json'
+      axios.get(api).then(result=> {
+        this.dailyPost = {
+          hitokoto: result.data.hitokoto,
+          from: result.data.from,
+        }
+      }).catch(()=>{
+        this.dailyPost = {
+          hitokoto: '「 簌簌冰上花，灿灿耀金华 」',
+          from: '霜冷·自言',
+        }
+        // this.$message.warning('load quote is field!')
+      })
     }
   },
+  created() {
+    this.loadQuote()
+  },
   mounted() {
-    this.toFrost()
+    this.verifyState()
   }
 
 }
@@ -164,11 +188,32 @@ export default {
 
   // 每日一句
   footer {
+    position: fixed;
+    bottom: 100px;
+    width: 100%;
+    left: 0;
+    transition: .3s;
       p {
+        width: 100%;
         text-align: center;
+        color: transparent;
+        background: transparent;
+        transition: .3s;
+      }
+
+      .postkito {
+        font-size: .8em;
         color: var(--sm-primary-color);
-        font-size: .8m;
-        border-bottom: var(--sm-comment-line);
+      }
+      .postfrom {
+        font-size: .5em;
+      }
+
+      &:hover .postfrom {
+        color: var(--sm-primary-color);
+      }
+      &:hover {
+        background: rgb(40, 40, 40);
       }
   }
 }

@@ -7,7 +7,7 @@ import store from '@/store/index'
 import router from '@/router/index'
 import { Message } from 'element-ui'
 
-axios.defaults.baseURL = 'http://127.0.0.1:8888'
+const ADDRESS = 'http://127.0.0.1:8888/'
 axios.defaults.timeout = 6000
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 // Content-Type: application/x-www-form-urlencoded
@@ -104,9 +104,13 @@ axios.interceptors.response.use(
  * @param {Object} params [请求时携带的参数:keyword]
  */
  export function get(url, params){    
-    return new Promise((resolve, reject) =>{        
-        axios.get(url, {            
+    return new Promise((resolve, reject) =>{     
+        axios.get(ADDRESS+url, {            
             params        
+        }, {
+            headers: {
+                "Access-Control-Allow-Origin": "*"
+            }
         }).then(res => {
             resolve(res.data);
         }).catch(() =>{
@@ -121,7 +125,7 @@ axios.interceptors.response.use(
  */
  export function post(url, data, timeout) {
     return new Promise((resolve, reject) => {
-         axios.post(url, data, timeout||3000)
+         axios.post(ADDRESS+url, data, timeout||3000)
         .then(res => {
             resolve(res.data);
         })

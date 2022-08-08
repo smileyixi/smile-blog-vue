@@ -59,5 +59,14 @@ export const getArticleCount = (params) => {
     return get('api/blog/count', params)
 }
 
+/**
+ * 新增文章
+ * @param {*} params 
+ * @returns 
+ */
+export const insertArticle = (data) => {
+    return post('api/blog/new', data)
+}
+
 
 
