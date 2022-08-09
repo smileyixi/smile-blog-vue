@@ -745,6 +745,11 @@ export default {
     }
 }
 
+// post article font color
+.artWrapper {
+    color: rgb(206, 206, 206);
+}
+
 // 文章内容
 .content {
     font-size: .875em;
