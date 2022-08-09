@@ -6,27 +6,27 @@
 
 
 
-![home](home.png)
+![home](pictures/home.png)
 
 
 
-![archive](archive.png)
+![archive](pictures/archive.png)
 
 
 
-![callback_1](callback_1.png)
+![callback_1](pictures/callback_1.png)
 
 
 
-![login](login.png)
+![login](pictures/login.png)
 
 
 
-![frostdock](frostdock.png)
+![frostdock](pictures/frostdock.png)
 
-![writeBlog](writeBlog.png)
+![writeBlog](pictures/writeBlog.png)
 
-![manageArticle](manageArticle.png)
+![manageArticle](pictures/manageArticle.png)
 
 ## Project setup
 
