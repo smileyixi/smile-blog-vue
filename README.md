@@ -2,7 +2,7 @@
 
 
 
-主要使用vue2 + elementUI，具体版本可见`packge.json`，下面是一些展示图，后台部分管理功能正在开发
+主要使用vue2脚手架 + elementUI搭建前端部分，具体版本可见`package.json`文件，下面是一些展示图，后台部分管理功能正在开发
 
 
 
