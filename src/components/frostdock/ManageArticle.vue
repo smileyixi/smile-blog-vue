@@ -17,10 +17,10 @@
             <!-- 作者只显示我的 -->
             <div class="btn-showmine">
                 <el-switch
-                v-model="isAuthor"
+                v-model="isShowAll"
                 active-color="var(--sm-frost-color)"
                 inactive-color="#555"
-                title="只看我的"
+                title="加载全部的文章"
                 >
                 </el-switch>
             </div>
@@ -82,6 +82,7 @@
         :data="articleList.filter(data => !search || data.title.toLowerCase().includes(search.toLowerCase()))"
         style="width: 100%;height: 500px;overflow: auto;"
         v-infinite-scroll="loadNextTick"
+        @selection-change="handleSelectionChange"
         >
             <el-table-column
             type="selection"
@@ -103,7 +104,7 @@
             </el-table-column>
             
             <el-table-column
-            label="日期"
+            label="发布日期"
             prop="createAt">
             </el-table-column>
 
@@ -124,7 +125,7 @@
         </el-table>
         <div class="status">
             <p v-show="isLoading">Loading...</p>
-            <p v-show="noMore">no more...</p>
+            <p v-if="noMore" class="noMore">no more...</p>
         </div>
 
         <!-- 统计 -->
@@ -138,17 +139,19 @@
 </template>
 
 <script>
-import { getBlogList, getArticleCount } from '@/request/blogApi'
+import { getBlogList, getArticleCount, delArticle } from '@/request/blogApi'
+
 export default {
 data() {
     return {
             articleList: [],
+            checkedSelection: [], // 选中的数据列表
             search: '',
             artCount: 0,
-            isAuthor: false,
+            isShowAll: false,
             isLoading: false,
             noMore: false,
-            tick: 0, // 跳过的数据个数
+            tick: 0,        // 跳过的数据个数
             username: ''    // 本地用户名
         }
     },
@@ -156,15 +159,61 @@ data() {
         toRouter(path) {
             this.$router.push(path)
         },
-        handleEdit(index, row) {
-        console.log(index, row);
+        // 弹出框
+        confirm(content, title, backText, callback) {
+            
         },
-        handleDelete(index, row) {
-        console.log(index, row);
+        // 编辑单项
+        handleEdit(index, article) {
+            // 传递article信息到writeblog中发布
+            this.$router.push({
+                name: 'writeblog',
+                params: article
+            })
+            // console.log(index, article);
+        },
+        // 删除单项
+        handleDelete(index, article) {
+            this.$confirm(`写作不易，是否删除文章 - ${article.title.slice(0, 20)}`, '警告', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(() => {
+                    delArticle({id: article._id}).then(result=>{
+                        if(result.data.n === 1) {
+                            this.$message({
+                                type: 'success',
+                                message: `${article.title} - 文章成功删除`
+                            });
+                            this.articleList.splice(index, 1)
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: '文章删除失败！'
+                            });
+                        }
+                    }).catch(err=>{
+                        this.$message.error(err)
+                    })
+                }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除文章'
+                });          
+            });
+        },
+        // 保存选中的数据列表
+        handleSelectionChange(val) {
+            this.checkedSelection = val;
+        },
+        // 编辑多项： action => 删除:del, disComment:禁止评论..
+        editItems(action) {
+
         },
         // 加载文章数据 - 实时
         onLoad() {
             this.isLoading = true
+            if(this.noMore) return
             getBlogList({skip:this.tick, keyword: this.search}).then(result=>{
                 if (result.data.length == 0) {
                     this.isLoading = false
@@ -194,6 +243,29 @@ data() {
             getArticleCount().then(result=>{
                 this.artCount = result
             })
+        },
+        // 加载全部数据
+        handleLoadAll() {
+            this.isLoading = true
+            this.noMore = true
+            this.$message.info('数据加载中..')
+            getBlogList({all: 1, keyword: this.search}).then(result=>{
+                result.data.forEach(art=>{
+                    art.category = art.category[0].title
+                    art.createAt = this.$func.localDate(art.createAt)   // 转为本地时间
+                })
+                this.articleList = result.data
+                
+                this.isLoading = false
+                this.$message.success('数据全部加载完毕！')
+            })
+        }
+    },
+    watch: {
+        isShowAll() {
+            if (this.isShowAll) {
+                this.handleLoadAll()
+            }
         }
     },
     created() {
@@ -340,6 +412,17 @@ data() {
         background: #222;
         border-radius: 20px;
         height: 32px;
+
+        .noMore {
+            animation: 1.5s noMoreAnime ease;
+        }
+
+        @keyframes noMoreAnime {
+            50% {
+                color: white;
+                background: var(--sm-frost-color);
+            }
+        }
     }
 
     // 统计

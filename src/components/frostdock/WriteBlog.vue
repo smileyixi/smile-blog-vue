@@ -75,7 +75,7 @@
         <!-- 作者 -->
         <div class="metacard">
           <span>文章作者</span>
-          <span class="primary-color" style="border-bottom: var(--sm-comment-line);">{{user.username}}</span>
+          <span class="primary-color" style="border-bottom: var(--sm-comment-line);">{{author}}</span>
         </div>
 
         <!-- 选择时间 -->
@@ -111,7 +111,7 @@
 </template>
 <script>
 import { getCategoryList } from '../../request/categoryApi'
-import { insertArticle } from '../../request/blogApi'
+import { insertArticle, updateArticle } from '../../request/blogApi'
 import { imgurl_user } from '@/config/account'
 import axios from 'axios'
 export default {
@@ -149,12 +149,15 @@ export default {
       cateCheck: '',  // 选中的分类id
       artTitle: '',   // 文章标题
       content: ' ',   // 输入的文字内容
+      author: '',     // 作者
+      disComment: false,
+
+      // 接受到了要编辑的用户信息
+      editArticle: {},
 
       tags: ['日常'],
       inputVisible: false,
       inputValue: '',
-
-      disComment: false,
 
       // date
       datetime: '',
@@ -211,9 +214,7 @@ export default {
     // 添加标签并收起input
     handleInputConfirm() {
       let inputValue = this.inputValue;
-      if (inputValue == '' || (inputValue && (inputValue.length < 2 || inputValue.length > 10))) {
-        this.$message.warning({'message': '标签只能是2到10个字符哦'})
-      } else {
+      if (inputValue) {
         this.tags.push(inputValue);
       }
       this.inputVisible = false;
@@ -250,21 +251,41 @@ export default {
       if(!this.content) {
         return this.$message.warning('内容不能为空')
       }
-      if(!this.user) {
+      if(!this.author) {
         return this.$message.warning('用户信息错误，请返回登陆！')
       }
 
+      // 处于编辑状态
+      if(JSON.stringify(this.editArticle) !== '{}') {
+        return updateArticle({
+          uid: this.editArticle.uid,
+          hot: this.editArticle.hot,
+          _id: this.editArticle._id,
+          tags: this.tags,
+          title: this.artTitle,
+          cid: this.cateCheck,
+          author: this.author,
+          content: this.content,
+          disComment: this.disComment,
+          createAt: this.datetime?this.datetime:Date.now(),
+        }).then(result=>{
+          this.$message.success(result.msg)
+        }).catch(err=>{
+          this.$message.error(err.msg)
+        })
+      }
+
+      // 插入文章
       insertArticle({
         title: this.artTitle,
         cid: this.cateCheck,
-        author: this.user.username,
-        uid: this.user._id,
+        author: this.author,
+        uid: JSON.parse(this.$store.state.user)._id,
         content: this.content,
         createAt: this.datetime?this.datetime:Date.now(),
         hot: 3,
         disComment: this.disComment?1:0
       }).then(result=> {
-        console.log(result.data)
         this.open(result.data)
       }).catch(err=> {
         // this.$message.error('文章发布失败！')
@@ -303,7 +324,6 @@ export default {
             }
         }).then(result=>{
           const data = result.data
-          console.log(data)
           if(data.code == 200) {
             this.$message.success('上传成功')
           }
@@ -325,15 +345,26 @@ export default {
     }
     
   },
-  watch: {
-    process() {
-      console.log(this.progress)
-    }
-  },
   created() {
     this.onLoad()
-    this.user = JSON.parse(this.$store.state.user)
+    this.author = JSON.parse(this.$store.state.user).username
+    // 保存需要更新的文章对象
+    this.editArticle = this.$route.params
   },
+  mounted() {
+    // 设置显式信息
+    if(JSON.stringify(this.editArticle) !== '{}') {
+      this.author = this.editArticle.author       // 用户信息
+      this.cateCheck = this.editArticle.cid  // 选中的分类id
+      this.artTitle = this.editArticle.title   // 文章标题
+      this.tags = this.editArticle.tags || []  // 标签
+      this.datetime = this.editArticle.createAt  // 标签
+      this.uid = this.editArticle.uid
+      this.$nextTick(()=>{
+        this.content = this.editArticle.content   // 输入的文字内容
+      })
+    }
+  }
 };
 </script>
 

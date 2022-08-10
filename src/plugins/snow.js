@@ -5,9 +5,10 @@
  */
 
 
-export const snow = (flag) => {
-    localStorage.setItem('_snow', flag)
-    if (Boolean(localStorage.getItem('_snow'))) {
+export const snow = () => {
+    // 读取本地数据判断是否开启插件
+    const _snow = parseInt(localStorage.getItem('_snow'))
+    if (_snow) {
       (function () {
         var requestAnimationFrame =
           window.requestAnimationFrame ||

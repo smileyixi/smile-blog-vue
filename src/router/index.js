@@ -1,6 +1,6 @@
 import VueRouter from 'vue-router'
 import store from '@/store'
-import Cookies from 'js-cookie'
+import {Message} from 'element-ui'
 
 //获取原型对象上的push函数
 const originalPush = VueRouter.prototype.push
@@ -20,7 +20,8 @@ const router = new VueRouter({
             component: ()=>import('../views/Index.vue'),
             meta: {
                 keepalive: true,
-                title: site_title
+                title: site_title,
+                auth: false
             },
             children: [
                 {
@@ -79,11 +80,13 @@ const router = new VueRouter({
             name: 'frostdock',
             component: ()=>import('../views/FrostDock.vue'),
             meta: {
-                title: site_title
+                title: site_title,
+                auth: true
             },
             children: [
                 {
                     path: 'writeblog',
+                    name: 'writeblog',
                     components: {
                         frost_view:()=>import('@/components/frostdock/WriteBlog.vue')
                     },
@@ -128,6 +131,7 @@ const router = new VueRouter({
 router.beforeEach((to,from,next)=>{
 	// 保持获取token
 	store.commit('loadToken')
+    const token = store.state.token
 
     // 设置固定标题
     if(to.meta.title) document.title = to.meta.title
@@ -136,10 +140,12 @@ router.beforeEach((to,from,next)=>{
 	if(to.fullPath==="/index"){ 
 		router.push("/")
 	}
-    else if(to.fullpath==="/frostdock") {
-        if(this.$store.state.token !== '' || 1) {
-
+    else if(/^\/frostdock/.test(to.path)) {
+        if(!token) {
+            Message.warning('当前未登陆,或者登陆信息过期了∠( ᐛ 」∠)＿')
+            return router.replace('/login')
         }
+        next()
     }
 	else{
 		next() //放行

@@ -69,4 +69,27 @@ export const insertArticle = (data) => {
 }
 
 
+/**
+ * 新增文章
+ * @param {*} params 
+ * @returns 
+ */
+ export const delArticle = (data) => {
+    return post('api/blog/del', data)
+}
+
+
+/**
+ * 新增文章
+ * @param {*} params 
+ * @returns 
+ */
+ export const updateArticle = (data) => {
+    return post('api/blog/update', data)
+}
+
+
+
+
+
 

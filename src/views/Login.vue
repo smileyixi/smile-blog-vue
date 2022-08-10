@@ -65,9 +65,8 @@ export default {
               token: result.data.token,
               createTime: result.data.createTime
             })
-            localStorage.setItem("_isvt", result.data.token)
 
-            // 跳转到后台
+            // 成功 - 跳转到后台
             this.toRouter()
 
           } else {

@@ -20,14 +20,14 @@
         active-text-color="#447dda">
         <!-- 控制台 -->
         <el-menu-item index="1" @click="toRouter('/frostdock')">
-          <i class="el-icon-location"></i>
+          <i class="el-icon-menu"></i>
           <span slot="title">控制台&nbsp;&nbsp;&nbsp;</span>
         </el-menu-item>
 
         <!-- 快捷操作 -->
         <el-submenu index="2">
           <template slot="title">
-            <i class="el-icon-menu"></i>
+            <i class="el-icon-s-promotion"></i>
             <span>快捷操作</span>
           </template>
 
@@ -97,7 +97,6 @@
       <!-- 主显示区域 -->
       <Controller v-if="this.$route.name === 'frostdock'" />
 
-      <!-- <section class="sm-card" style="height:300px"></section> -->
       <section class="sm-card">
         <router-view name="frost_view"></router-view>
       </section>
@@ -168,19 +167,11 @@ export default {
     loginOut() {
       this.$store.commit('cleanToken')
       this.$message.info('用户登出')
-      this.$router.push({path: '/index'})
+      this.$router.replace({path: '/index'})
     },
-  },
-  watch: {
-    "$route"(to, from) {
-      if(/^\/frostdock/.test(to.path)) {
-        tokenVerify()
-      }
-    }
   },
   created() {
     this.loadUser()
-    tokenVerify()
   }
 }
 </script>

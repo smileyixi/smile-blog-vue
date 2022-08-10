@@ -63,19 +63,19 @@ axios.interceptors.response.use(
                         }
                     })
                     break
-                // 403 token过期
+                // 403 没有权限或者token过期
                 // 登录过期对用户进行提示
                 // 清除本地token和清空vuex中token对象
                 // 跳转登录页面 
                 case 403:
                     Message({
-                        message: '您的登陆已过期',
+                        message: error,
                         type: 'warning'
                     })
                     // clean token
                     store.commit('cleanToken')
                     // to login
-                    router.push({                            
+                    router.replace({                            
                         path: '/login'                       
                     });
                     break

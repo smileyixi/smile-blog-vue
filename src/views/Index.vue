@@ -38,7 +38,7 @@
               <div class="description" style="float: right">
                 <a :href="siteUrl" style="cursor: pointer;">
                   <!-- 博客标题 -->
-                  <h1 class="effect_1" :style="`background-image: url(${tit_font_bg})`" >
+                  <h1 class="effect_1 font-pic" >
                     {{siteTitle}}
                   </h1>
                 </a>
@@ -122,11 +122,12 @@
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 import ArticleList from "../components/ArticleList.vue";
+import anime from 'animejs'
+import { snow } from '@/plugins/snow'
 import { getBlogList } from '@/request/blogApi'
 import { getPage } from '@/request/pageApi'
 import { getCategoryList, getCategoryCount } from '@/request/categoryApi'
-import anime from 'animejs'
-import { snow } from '@/plugins/snow'
+
 
 export default {
   name: "MainIndex",
@@ -134,10 +135,8 @@ export default {
   data() {
     return {
       // source
-      tit_bg: require("@/assets/img/tit_bg.jpg"),
-      photo: require("@/assets/img/photo.png"),
-      tit_font_bg: require("@/assets/img/tit_font_bg.jpg"),
-      bg: require("@/assets/img/bg_main.jpg"),
+      tit_bg: require("@/assets/img/tit_bg.jpg"), // 个人卡片
+      bg: require("@/assets/img/bg_main.jpg"),    // 背景图片
       // 主题设置
       siteUrl: 'http://localhost:8080',
       siteTitle: '霜冷の秘密基地',
@@ -165,22 +164,18 @@ export default {
       pagesList: [
         {
           name: '时光',
-          description: '古今过往，似水流年',
           page: 'timer',
         },
       ],
       // 博客数据
-      asideArticleList: [], // 聚合文章列表
-      asideCategoryList: [  // 聚合分类列表
-        {
-          title: 'category',
-          url: '#',
-          count: 0
-        }
-      ],
+      asideArticleList: [],   // 聚合文章列表
+      asideCategoryList: [],  // 聚合分类列表
       isLoading: true,
       errMsg: '',
       isChangeNavbg: false,
+
+      // 下雪插件
+      snow: -1, // 1 开启，0关闭，这里-1表示初始值，不可改动
 
     };
   },
@@ -287,7 +282,7 @@ export default {
         });
         setTimeout(() => {
           this.isLoading=false
-        }, 1200);
+        }, 2000);
       },
       // 清除缓存
       clearCache() {
@@ -314,12 +309,24 @@ export default {
           this.errMsg===''
         }
       },
+      snow(_, oldSnow) {
+        if(oldSnow !== -1) {
+          localStorage.setItem('_snow', this.snow)
+          this.$router.go(0)
+        }
+      }
 
     },
     // 发送请求
     created() {
       this.loadAsideData()
       this.loadPages()
+      // 存储snow状态
+      if(localStorage.getItem('_snow')) {
+        this.snow = localStorage.getItem('_snow')
+      } else {
+        localStorage.setItem('_snow', 1)
+      }
     },
     mounted(){
       // 事件总线 - 关闭loading动画
@@ -332,11 +339,10 @@ export default {
         else toTop.classList.remove('sm-hide')
       })
 
-      // 插件开关
-      snow(true)
+      // 插件
       this.loading()
-      
-    }
+      snow()
+    },
 };
 </script>
 
@@ -373,6 +379,9 @@ export default {
   }
   .index-navbar  {
     margin-top: 1.25em !important;
+  }
+  #toTop {
+    display: none;
   }
   
 }
@@ -474,6 +483,11 @@ a {
   margin: 0 auto;
   -webkit-transition: all 0.6s ease;
   transition: all 0.6s ease;
+
+  // 背景图片
+  .font-pic {
+    background-image: url(@/assets/img/tit_font_bg.jpg)
+  }
 
   // 标题信息
   header {

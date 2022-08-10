@@ -8,7 +8,10 @@ const actions = {}
 const mutations = {
     // 页面加载token
     loadToken(state) {
-        state.token = Cookie.get('token') || state.token
+        state.token = Cookie.get('token')
+        if(!Cookie.get('token')) {
+            state.token = ''
+        }
         state.user = localStorage.getItem('_user')
         state.createTime = localStorage.getItem('_createTime')
     },
@@ -29,14 +32,12 @@ const mutations = {
         state.token = ''
         Cookie.remove('token')
         localStorage.removeItem('_user')
-        localStorage.removeItem('_isvt')
     }
 }
 const state = {
-    // 模拟用户数据
+    // 用户数据
     user: {},
     token: '',
-    isLogin: false,
 }
 
 export default new Vuex.Store({

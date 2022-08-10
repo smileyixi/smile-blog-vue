@@ -1,8 +1,6 @@
 <template>
   <div class="topbar">
     <section class="article-list" ref="articleList">
-      <el-skeleton :rows="4" animated v-if="errMsg !== ''" class="skeleton"/>
-      <el-skeleton :rows="5" animated v-if="errMsg !== ''" class="skeleton"/>
       <article style="margin-top: 50px;" class="article" 
       v-for="(article, index) in articleList" :key="index">
         <!-- 标题 -->
@@ -152,10 +150,6 @@ export default {
       this.artCount()
       this.dataLoad()
     },
-    mounted() {
-      
-      console.log(JSON.parse(sessionStorage.getItem('articleList_1')))
-    },
 }
 </script>
 
@@ -173,6 +167,7 @@ a {
   padding: 0 20px;
   margin: 0 30px;
   overflow: hidden;
+  min-height: 460px;
 
   // 文章标题
   .article_title {
